@@ -11,9 +11,9 @@
               #'cat/org-fontify-src-font-role))
 
 (use-package org
-  :vc (org-mode :url "https://code.tecosaur.net/tec/org-mode"
+  :vc (org-mode :url "https://github.com/cat-emacs/org-mode"
                 :lisp-dir "lisp/"
-                :rev "dev")
+                :rev "main")
   :commands
   (org-store-link)
   :delight

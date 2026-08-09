@@ -281,7 +281,7 @@ sudo cpan -i File::HomeDir
 #+end_src
 
 *** Org
-Cat Emacs uses [[https://code.tecosaur.net/tec/org-mode][Tecosaur's Org branch]] for Org LaTeX previews.
+Cat Emacs uses [[https://github.com/cat-emacs/org-mode][cat-emacs/org-mode]] for Org LaTeX previews.
 If autoloads break, rebuild them with:
 
 #+begin_src sh
