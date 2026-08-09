@@ -62,7 +62,7 @@
   "j" 'cat-org-jira-prefix
   "l" #'cat-language
   "L" #'org-store-link
-  "n" #'mode-transient
+  "n" #'mode-transient-major
   "N" #'mode-transient-minor
   "o" #'ace-window
   "p" 'cat-plugin-prefix

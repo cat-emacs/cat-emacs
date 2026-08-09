@@ -40,11 +40,7 @@
     ("I" "inline" eglot-code-action-inline)
     ("R" "rewrite" eglot-code-action-rewrite)])
   :major-transient
-  ((prog-mode
-    beancount-mode
-    kotlin-ts-mode
-    python-base-mode
-    yaml-ts-mode)
+  (prog-mode
    ["LSP"
     ("e" "eglot" cat-eglot)])
   :config
@@ -86,10 +82,6 @@
     ("e" "execute command" lsp-proxy-execute-command)
     ("p" "show diagnostics" lsp-proxy-show-project-diagnostics)])
   :major-transient
-  ((prog-mode
-    beancount-mode
-    kotlin-ts-mode
-    python-base-mode
-    yaml-ts-mode)
+  (prog-mode
    ["LSP"
     ("p" "lsp proxy" cat-lsp-proxy)]))

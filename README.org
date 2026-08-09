@@ -142,7 +142,9 @@ The group vectors use Transient's native syntax.  Prefix =:description= values
 that are forms are made dynamic automatically, without an explicit =lambda=.
 Use =C-c n= for the current major-mode menu and =C-c N= for active registered
 minor modes.  Mode-transient menu buffers hide the cursor by default so it does
-not cover a title icon.
+not cover a title icon.  Major-mode menus inherit every registered parent-mode
+menu, so a contribution registered once for =prog-mode= is shared by all of its
+derived modes.
 
 ** Configuration Entry Points
 
