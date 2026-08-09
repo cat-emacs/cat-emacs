@@ -10,6 +10,23 @@
   (advice-add 'org-src-font-lock-fontify-block :after
               #'cat/org-fontify-src-font-role))
 
+(defun cat/org-configure-texlive-environment ()
+  "Connect Homebrew dvisvgm to the TeX Live kpathsea tree."
+  (when (and IS-MAC
+             (executable-find "dvisvgm")
+             (executable-find "kpsewhich"))
+    (unless (getenv "TEXMFROOT")
+      (when-let ((texmfroot
+                  (car (ignore-errors
+                         (process-lines "kpsewhich" "-var-value=TEXMFROOT")))))
+        (setenv "TEXMFROOT" texmfroot)))
+    (unless (getenv "TEXMFCNF")
+      (when-let ((texmfcnf
+                  (car (ignore-errors (process-lines "kpsewhich" "texmf.cnf")))))
+        (setenv "TEXMFCNF" (file-name-directory texmfcnf))))))
+
+(cat/org-configure-texlive-environment)
+
 (use-package org
   :vc (org-mode :url "https://github.com/cat-emacs/org-mode"
                 :lisp-dir "lisp/"
