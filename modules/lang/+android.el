@@ -1,8 +1,7 @@
 ;; -*- lexical-binding: t; -*-
 
 (use-package android-mode
-  :vc (android-mode :url "https://github.com/cat-emacs/emacs-studio"
-                    :lisp-dir "android-mode/")
+  :vc (:url "https://github.com/cat-emacs/android-mode")
   :delight (android-mode (:eval (+with-icon "nf-md-android" " ")))
   :commands #'android-root
   :init
@@ -27,8 +26,7 @@
     ("R" "refresh" android-refresh-flavors)]))
 
 (use-package compose-preview
-  :vc (compose-preview :url "https://github.com/cat-emacs/emacs-studio"
-                       :lisp-dir "compose-preview/")
+  :vc (:url "https://github.com/cat-emacs/compose-preview")
   :minor-transient
   (android-mode
    ["Compose"
