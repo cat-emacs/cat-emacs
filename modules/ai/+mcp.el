@@ -12,7 +12,9 @@
   :hook
   (cat-idle-preload . mcp-server-lib-start)
   :custom
-  (mcp-server-lib-install-directory cat-etc-dir))
+  (mcp-server-lib-install-directory cat-etc-dir)
+  :config
+  (mcp-server-lib-install))
 
 (use-package elisp-dev-mcp
   :hook
