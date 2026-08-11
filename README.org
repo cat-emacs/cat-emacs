@@ -165,8 +165,10 @@ derived modes.
   toggles, Org, plugins, workspaces, search, and AI tools.
 - =modules/ui/+font.el= configures and integrates
   [[https://github.com/cat-emacs/prosody][Prosody]], which maps modes and faces to semantic font roles backed by
-  script-aware fontsets.  Its =:font-role= keyword is available to modules
-  loaded after =:ui font=; see [[file:docs/font-typography-research.md][the font and typography notes]] for the model and fallback behavior.
+  script-aware fontsets.  Its =:font-rule= keyword registers mode- or
+  buffer-name-based rules for modules loaded after =:ui font=.  When neither
+  selector is specified, Prosody derives the package's conventional major
+  mode; see [[file:docs/font-typography-research.md][the font and typography notes]] for the model and fallback behavior.
 - =templates/cats= is the reference module list for new users.
 
 ** Package Synchronization
