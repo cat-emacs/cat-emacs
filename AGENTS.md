@@ -84,8 +84,15 @@ must never become a manually maintained source file.
   constraints.
 - Prefer ASCII unless an existing file or user-facing value requires Unicode.
 
-Do not edit generated or runtime state such as `elpa/`, `eln-cache/`, `.local/`,
-`tree-sitter/`, or the active `custom.el`.
+Do not edit generated or runtime state such as `eln-cache/`, `.local/`,
+`tree-sitter/`, the active `custom.el`, or third-party packages under `elpa/`.
+Packages under `elpa/` whose Git remote belongs to the `cat-emacs` GitHub
+organization are maintained source working trees and may be edited when the
+task targets that package. Determine ownership from the remote, not the
+directory name.
+
+For packages installed under `elpa/`, read the local source directly for
+documentation and behavior; do not query Context7.
 
 ## Chezmoi
 
