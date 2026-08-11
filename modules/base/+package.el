@@ -43,7 +43,10 @@
   :init
   (defun cat/mode-transient-title (mode kind)
     "Return a mode Transient title for MODE of KIND."
-    (+with-mode-icon mode (mode-transient-default-title mode kind)))
+    (let ((title (mode-transient-default-title mode kind)))
+      (if (eq kind 'major)
+          (+with-mode-icon mode title)
+        title)))
   :custom
   (mode-transient-title-function #'cat/mode-transient-title)
   :config
