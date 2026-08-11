@@ -81,7 +81,7 @@
 (use-package valign
   :cat
   :delight (valign-mode
-            (:eval (+with-icon "nf-md-align_vertical_distribute" " ")))
+            (:eval (+with-icon "nf-fa-align_justify" " ")))
   :hook ((org-mode markdown-mode) . valign-mode))
 
 (use-package ultra-scroll
