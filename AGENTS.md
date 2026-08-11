@@ -74,6 +74,8 @@ must never become a manually maintained source file.
 
 - Keep lexical binding enabled in Emacs Lisp files.
 - Follow nearby `use-package`, naming, and module patterns.
+- Configure Custom variables with `use-package` and `:custom`. Reserve `:init`
+  for imperative or non-Custom setup that must run before the package loads.
 - Put shared lifecycle and package behavior in core; keep feature-specific
   settings in their module.
 - Avoid shallow wrapper functions unless they enforce a real invariant or hide

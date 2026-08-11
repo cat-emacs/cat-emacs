@@ -5,9 +5,11 @@
 The core implementation lives in
 [`Prosody`](https://github.com/cat-emacs/prosody).  Cat Emacs loads its
 use-package and Nerd Icons integrations from
-[`modules/ui/+font.el`](../modules/ui/+font.el).  Prosody separates physical
-font fallback, semantic typography, and mode-specific application.  It does
-not use `face-font-family-alternatives` as configuration input.
+[`modules/ui/+font.el`](../modules/ui/+font.el), which also owns the font
+stacks, semantic roles, named presets, and fallback mode rules.  Prosody
+separates physical font fallback, semantic typography, and mode-specific
+application.  It does not use `face-font-family-alternatives` as configuration
+input.
 
 ### Font stacks and roles
 
