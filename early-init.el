@@ -1,4 +1,4 @@
-;; -*- lexical-binding: nil; -*-
+;; -*- lexical-binding: t; -*-
 
 ;;; os
 (defconst EMACS28+   (> emacs-major-version 27))

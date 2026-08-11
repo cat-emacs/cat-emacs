@@ -25,7 +25,7 @@ changes outside the requested scope.
   keyword, bootstrap dependencies, synchronization, and upgrades.
 - `modules/<group>/+<name>.el` contains optional feature configuration.
 - `templates/` contains repository defaults. User overrides live under
-  `$HOME/.config/cat-emacs/`.
+  `$XDG_CONFIG_HOME/cat-emacs/`, falling back to `$HOME/.config/cat-emacs/`.
 
 Keep core initialization deterministic:
 
@@ -85,11 +85,16 @@ must never become a manually maintained source file.
 - Prefer ASCII unless an existing file or user-facing value requires Unicode.
 
 Do not edit generated or runtime state such as `eln-cache/`, `.local/`,
-`tree-sitter/`, the active `custom.el`, or third-party packages under `elpa/`.
-Packages under `elpa/` whose Git remote belongs to the `cat-emacs` GitHub
-organization are maintained source working trees and may be edited when the
-task targets that package. Determine ownership from the remote, not the
-directory name.
+`tree-sitter/`, or the active `custom.el`.
+
+## ELPA Sources
+
+Treat third-party packages under `elpa/` as runtime dependencies and do not
+edit them. Packages whose Git remote belongs to the `cat-emacs` GitHub
+organization are separate maintained source repositories. When a task targets
+one, work within that repository, inspect its local instructions and status,
+and follow its own test conventions. Determine ownership from the remote, not
+the directory name.
 
 For packages installed under `elpa/`, read the local source directly for
 documentation and behavior; do not query Context7.
@@ -98,7 +103,7 @@ documentation and behavior; do not query Context7.
 
 The chezmoi source is a separate worktree under
 `$HOME/.local/share/chezmoi/`. When a task changes the managed user `cats` or
-Custom workflow, inspect both the active file under `$HOME/.config/cat-emacs/`
+Custom workflow, inspect both the active file selected by `cat-user-directory`
 and its chezmoi source.
 
 Keep package declarations out of chezmoi data and templates. Do not run
@@ -107,9 +112,9 @@ worktree separately and preserve unrelated changes.
 
 ## Verification
 
-This is a configuration project. Do not add ERT or other test files unless the
-user explicitly changes this policy. Verify behavior with focused runtime and
-static checks instead.
+For changes to this configuration repository, do not add ERT or other test
+files unless the user explicitly changes this policy. Verify behavior with
+focused runtime and static checks instead.
 
 For Emacs Lisp edits:
 
