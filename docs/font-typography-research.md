@@ -1,15 +1,17 @@
 # Font system and typography research
 
-## Current Cat font model
+## Current Prosody font model
 
-The implementation in [`modules/ui/+font.el`](../modules/ui/+font.el)
-separates physical font fallback, semantic typography, and mode-specific
-application.  It does not use `face-font-family-alternatives` as configuration
-input.
+The core implementation lives in
+[`Prosody`](https://github.com/cat-emacs/prosody).  Cat Emacs loads its
+use-package and Nerd Icons integrations from
+[`modules/ui/+font.el`](../modules/ui/+font.el).  Prosody separates physical
+font fallback, semantic typography, and mode-specific application.  It does
+not use `face-font-family-alternatives` as configuration input.
 
 ### Font stacks and roles
 
-`cat-font-stacks` owns the physical candidates.  Each entry has this shape:
+`prosody-stacks` owns the physical candidates.  Each entry has this shape:
 
 ```elisp
 (STACK
@@ -22,14 +24,14 @@ input.
 ```
 
 `:extends` supplies properties omitted by the child.  When both stacks define
-the same font category, Cat combines their candidates child-first and removes
-duplicates.  The shared `fallback` stack owns symbol, mathematical, and emoji
-candidates.  Concrete stacks inherit it while defining their own ASCII and CJK
-choices.  For example, `monospace-code` places its ASCII candidates before
-those inherited through `monospace-align`, while retaining the inherited CJK
-fallbacks.
+the same font category, Prosody combines their candidates child-first and
+removes duplicates.  The shared `fallback` stack owns symbol, mathematical,
+and emoji candidates.  Concrete stacks inherit it while defining their own
+ASCII and CJK choices.  For example, `monospace-code` places its ASCII
+candidates before those inherited through `monospace-align`, while retaining
+the inherited CJK fallbacks.
 
-`cat-font-preset` maps semantic roles to those stacks:
+`prosody-roles` maps semantic roles to those stacks:
 
 ```elisp
 (ROLE
@@ -59,8 +61,8 @@ The current roles form this hierarchy:
 
 ### Named and buffer-local presets
 
-`cat-font-presets` defines named, differential presets on top of
-`cat-font-preset`.  Its names describe a visual or working context rather than
+`prosody-presets` defines named, differential presets on top of
+`prosody-roles`.  Its names describe a visual or working context rather than
 exposing physical stack categories.  All roles not mentioned by a preset
 continue to use the base definition.
 
@@ -77,21 +79,21 @@ Two automatically buffer-local variables select and refine the effective
 preset:
 
 ```elisp
-(setq-local cat-font-buffer-preset 'technical)
-(setq-local cat-font-buffer-role-overrides
+(setq-local prosody-buffer-preset 'technical)
+(setq-local prosody-buffer-overrides
             '((prose :stack sans-serif)
               (code-python :fonts ("Iosevka"))))
-(cat-font-refresh-buffer)
+(prosody-refresh-buffer)
 ```
 
 The resolution order, from highest to lowest priority, is
-`cat-font-buffer-role-overrides`, the selected entry in `cat-font-presets`,
-the base `cat-font-preset`, and inherited role properties.  `:fonts` replaces
+`prosody-buffer-overrides`, the selected entry in `prosody-presets`,
+the base `prosody-roles`, and inherited role properties.  `:fonts` replaces
 the role's own preferred ASCII list but keeps its stack as fallback.  A parent
 role override is visible to descendants, so changing `code` also changes the
 stack inherited by `code-python`.
 
-Use `M-x cat-font-select-buffer-preset` for an interactive buffer-local
+Use `M-x prosody-select-preset` for an interactive buffer-local
 selection.  Choosing `<base>` explicitly ignores a non-nil default preset;
 choosing `<default>` removes the local binding.  Both variables are safe as
 file locals when every role, stack, property, and face attribute value
@@ -99,12 +101,12 @@ validates:
 
 ```text
 ;; Local Variables:
-;; cat-font-buffer-preset: classical
-;; cat-font-buffer-role-overrides: ((code :fonts ("SF Mono")))
+;; prosody-buffer-preset: classical
+;; prosody-buffer-overrides: ((code :fonts ("SF Mono")))
 ;; End:
 ```
 
-Cat derives role faces and fontsets from the effective specification and
+Prosody derives role faces and fontsets from the effective specification and
 reuses them by content.  Buffers with the same effective role share generated
 faces, while different presets receive separate faces and fontsets.  Embedded
 Org and Markdown code blocks resolve their language role in the outer buffer,
@@ -115,19 +117,20 @@ so they inherit its selected preset and local role overrides.
 A face does not natively accept an ordered list for `:family`: the value is one
 family-name string.  A fontset does accept ordered specifications for
 character ranges, charsets, and scripts, and its name can be used wherever
-Emacs accepts a font name.  Cat therefore compiles one named fontset per role
-from two inputs:
+Emacs accepts a font name.  Prosody therefore compiles one named fontset per
+role from two inputs:
 
 1. The role's ordered ASCII candidates.
-2. Shared `cat-font-script-rules`, which maps CJK, symbol, mathematical, and
+2. Shared `prosody-script-rules`, which maps CJK, symbol, mathematical, and
    Emoji targets to categories inherited from the role's stack, plus the
    private-use ranges owned by Nerd Icons.
 
-Cat obtains the Nerd Icons ranges by temporarily intercepting the
-`set-fontset-font` calls made by `nerd-icons-set-font`.  It caches those range
-descriptions and applies them with `nerd-icons-font-family` to every role
-fontset.  Nerd Icons remains the source of truth when its private-use ranges
-change, and Cat does not maintain a duplicate range list.  Cat also lets
+The `prosody-nerd-icons` integration obtains the Nerd Icons ranges by
+temporarily intercepting the `set-fontset-font` calls made by
+`nerd-icons-set-font`.  It caches those range descriptions and supplies them
+through `prosody-fontset-rule-functions` for every role fontset.  Nerd Icons
+remains the source of truth when its private-use ranges change, so Prosody does
+not maintain a duplicate range list.  The integration also lets
 `nerd-icons-set-font` apply those ranges to each graphical frame's active
 fontset.  This second path covers mode-line formatters that replace an icon
 string's face with `mode-line`; role fontsets alone cannot affect those
@@ -151,7 +154,7 @@ The exact ranges give Nerd Icons priority only where it owns glyphs, while all
 other characters continue through the role's normal ASCII, CJK, symbol, math,
 and emoji rules.
 
-`cat-font-script-rules` maps Emacs character targets to categories inherited
+`prosody-script-rules` maps Emacs character targets to categories inherited
 from each role's stack.  On systems without compatible stipple support,
 `use-default-font-for-symbols` is non-nil so character-based indentation bars
 use the default face's full-height box-drawing glyphs.  On compatible systems,
@@ -162,17 +165,19 @@ rendered as Emoji.
 
 The resolved inputs also form a signature.  Existing role fontsets are rebuilt
 only when their signature changes.  The default fontset has a separate
-signature cache because it is shared by faces outside the role system.  Font
-setup runs after initialization, for new graphical frames, after theme
-refreshes, and immediately when the module is loaded into an already
-initialized graphical session.
+signature cache because it is shared by faces outside the role system.
+`prosody-setup` runs after initialization and for each new graphical frame;
+Cat Emacs also calls it after theme refreshes.  Setup always reapplies
+per-frame role-face attributes because theme activation can reset a face
+without invalidating Prosody's signature cache.  This is especially important
+for the first GUI frame created by an Emacs daemon.
 
-Cat applies each role fontset to its role face through both `:font` and
-`:fontset`.  `:font` resolves the first available ASCII candidate into the
-face's concrete Latin font, while `:fontset` preserves the CJK, mathematical,
-emoji, and icon mappings.  Using only `:fontset` would leave the Latin family
-inherited from the default face; using only `:font` would discard the script
-mappings.
+Prosody applies the first available ASCII family to a role face through
+`:family` and preserves CJK, mathematical, emoji, and icon mappings through
+`:fontset`.  The default face receives its generated fontset through both
+`:font` and `:fontset` because it also establishes the frame font.  Using only
+`:fontset` on a content role would leave its Latin family inherited from the
+default face; using only a concrete family would discard the script mappings.
 
 See the GNU manuals on
 [modifying fontsets](https://www.gnu.org/software/emacs/manual/html_node/emacs/Modifying-Fontsets.html)
@@ -189,9 +194,10 @@ documents the same overwrite/prepend/append semantics.
 
 ### Mode and face rules
 
-`cat-mode-font-rules` holds global fallback rules and applies the role system
-buffer-locally.  The first rule whose `:modes` or `:buffer-name` matches is
-used:
+Prosody applies font rules buffer-locally.  Within one rule, `:modes` and
+`:buffer-name` are alternative selectors: the rule matches when either the
+current major mode derives from a listed mode or the buffer name matches the
+regexp.  Its effects are:
 
 - `:font` selects the buffer's base role or concrete family list.
 - `:faces` remaps individual faces.  A face name ending in `*`, such as
@@ -199,31 +205,42 @@ used:
 - Extra face attributes override the selected role's attributes.
 - `:rescale` installs a buffer-local `face-font-rescale-alist`.
 
-Modules register higher-priority, module-owned rules through the `:cat-font`
+Modules register higher-priority, package-owned rules through the `:font-rule`
 use-package keyword.  A role alone applies to the conventional major mode
-derived from the package name; the full form can override `:modes` and assign
-roles to faces:
+derived from the package name.  Prosody derives that mode only when neither
+selector is present; the full form can specify `:modes`, `:buffer-name`, and
+face rules explicitly:
 
 ```elisp
 (use-package foo
-  :cat-font code)
+  :font-rule code)
+
+(use-package meow
+  :font-rule (code :buffer-name "Meow Cheatsheet"))
 
 (use-package org
-  :cat-font (body
-             :modes (org-mode)
-             :faces ((org-level-* heading)
-                     (org-table table))))
+  :font-rule (body
+              :modes org-mode
+              :faces ((org-level-* heading)
+                      (org-table table))))
 ```
 
 A face-only declaration starts with a keyword, for example
-`:cat-font (:faces ((foo-title heading)))`.  Registered rules retain
-declaration order and take priority over the centralized fallback rules.
+`:font-rule (:modes foo-mode :faces ((foo-title heading)))`.  The use-package
+handler registers the package name as owner, so a later declaration for the
+same package replaces its rule without changing declaration order.
+
+All matching registered rules are layered in declaration order.  The first
+one providing `:font` owns the buffer font, the first one providing `:rescale`
+owns rescaling, and every matching `:faces` entry is applied.  Only when no
+registered rule matches does Prosody use the first matching entry from the
+centralized `prosody-mode-rules` fallback list.
 
 For settings without a suitable `use-package` declaration, register the same
 rule format directly in its owning module:
 
 ```elisp
-(cat-register-font-rule
+(prosody-register
  'foo-special-buffer
  '(:buffer-name "Foo" :font code))
 ```
@@ -237,22 +254,22 @@ JS or Kotlin block uses `code-jvm`, and a language without a module-specific
 rule falls back to `code`.  The role face is prepended to the block region so
 the embedded mode's syntax highlighting remains intact.
 
-Role definitions remain centralized in `cat-font-preset`; package modules only
+Role definitions remain centralized in `prosody-roles`; package modules only
 declare where those roles are used.  Registration validates every referenced
-role against the active preset.  Declarations made before the font module loads
-are validated when it initializes, and later registrations are validated
-immediately.  Customizing either the preset or the centralized fallback rules
-also rejects references to missing roles.
+role against the active role set.  Customizing the roles or centralized
+fallback rules also rejects references to missing roles.
 
-Cat records every remapping cookie and the previous rescale state, so changing
-major mode or forcing a refresh removes only the settings owned by this
-module.  It also leaves a `buffer-face-mode` installed by other configuration
-alone.  Mode rules are applied when a buffer first appears in a window; hidden
-buffers remain untouched.  Theme and font refreshes reapply active rules only
-to buffers visible on live frames.
+Prosody records every remapping cookie and the previous rescale state, so
+changing major mode or forcing a refresh removes only the settings it owns.  It
+also leaves a `buffer-face-mode` installed by other configuration alone.  A
+role remap stays ahead of later relative `default` remaps, such as Solaire's,
+so those remaps can change colors without replacing the semantic font family.
+Mode rules are applied when a buffer first appears in a window; hidden buffers
+remain untouched.  Theme and font refreshes reapply active rules only to
+buffers visible on live frames.
 
 In short: a stack answers which physical Latin and CJK fonts are available, a
-role describes their semantic typography, and a mode rule decides where that
+role describes their semantic typography, and a font rule decides where that
 role is used.
 
 ## Typography principles
