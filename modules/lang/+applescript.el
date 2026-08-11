@@ -1,7 +1,7 @@
 ;; -*- lexical-binding: t; -*-
 
 (use-package applescript-mode
-  :font-role code-apple)
+  :font-rule code-apple)
 
 (use-package ob-applescript
   :demand t

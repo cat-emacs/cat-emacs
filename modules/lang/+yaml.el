@@ -1,7 +1,7 @@
 ;; -*- lexical-binding: t; -*-
 
 (use-package yaml-ts-mode
-  :font-role (code-config :modes (yaml-mode yaml-ts-mode))
+  :font-rule (code-config :modes (yaml-mode yaml-ts-mode))
   :mode "\\.ya?ml\\'")
 
 (use-package yaml-pro

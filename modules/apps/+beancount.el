@@ -1,7 +1,7 @@
 ;; -*- lexical-binding: t; -*-
 
 (use-package beancount
-  :font-role body
+  :font-rule body
   :ensure-system-package
   (beancount-language-server . beancount-language-server)
   :pin jcs-elpa

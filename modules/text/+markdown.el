@@ -16,7 +16,7 @@
 (use-package mustache)
 
 (use-package markdown-mode
-  :font-role (prose
+  :font-rule (prose
              :faces ((markdown-blockquote-face decorative)
                      (markdown-code-face code)
                      (markdown-gfm-checkbox-face mono)

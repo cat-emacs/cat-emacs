@@ -173,7 +173,7 @@
   :hook (after-init . sow-mode))
 
 (use-package treemacs
-  :font-role ui
+  :font-rule ui
   :bind
   ("M-0" . treemacs-select-window)
   :custom

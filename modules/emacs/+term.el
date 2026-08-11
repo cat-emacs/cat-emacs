@@ -34,7 +34,7 @@
 
 (use-package vterm
   :cat
-  :font-role (terminal
+  :font-rule (terminal
              :rescale (("Symbols Nerd Font" . 1.2)))
   :ensure-system-package
   (cmake . cmake)
@@ -59,7 +59,7 @@
     ("v" "vterm" vterm)]))
 
 (use-package mistty
-  :font-role (terminal
+  :font-rule (terminal
              :rescale (("Symbols Nerd Font" . 1.2)))
   :bind
   (:map project-prefix-map
@@ -101,7 +101,7 @@
   (meow-vterm-enable))
 
 (use-package ghostel
-  :font-role (terminal
+  :font-rule (terminal
              :rescale (("Symbols Nerd Font" . 1.2)))
   :transient
   (cat-term

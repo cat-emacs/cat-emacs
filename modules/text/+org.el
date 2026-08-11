@@ -18,7 +18,7 @@
   (org-store-link)
   :delight
   (org-cdlatex-mode (:eval (+with-icon "nf-seti-tex" " ")))
-  :font-role
+  :font-rule
   (prose
    :modes org-mode
    :faces ((org-block code)
@@ -221,7 +221,7 @@
 (use-package org-modern
   :demand
   :after org
-  :font-role
+  :font-rule
   (:modes org-mode
           :faces ((org-modern-block-name code)
                   (org-modern-done mono)

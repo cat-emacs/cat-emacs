@@ -1,11 +1,8 @@
 ;; -*- lexical-binding: t; -*-
 
-(prosody-register
- 'meow-cheatsheet
- '(:buffer-name "Meow Cheatsheet" :font code))
-
 (use-package meow
   :demand t
+  :font-rule (code :buffer-name "Meow Cheatsheet")
   :init
   (defun cat/meow-toggle ()
     (meow-normal-mode 'toggle))

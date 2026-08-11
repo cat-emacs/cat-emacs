@@ -6,13 +6,13 @@
 
 (use-package js
   :ensure nil
-  :font-role (code-jvm :modes js-base-mode)
+  :font-rule (code-jvm :modes js-base-mode)
   :custom
   (js-indent-level 2))
 
 (use-package json-ts-mode
   :ensure nil
-  :font-role (code-config :modes (json-mode json-ts-mode))
+  :font-rule (code-config :modes (json-mode json-ts-mode))
   :ensure-system-package
   (vscode-json-languageserver . "bun add -g vscode-json-languageserver")
   :when EMACS29+
@@ -20,7 +20,7 @@
 
 (use-package typescript-ts-mode
   :ensure nil
-  :font-role (code-jvm :modes typescript-ts-base-mode)
+  :font-rule (code-jvm :modes typescript-ts-base-mode)
   :ensure-system-package
   (typescript-language-server . "bun add -g typescript-language-server")
   :when EMACS29+
