@@ -39,16 +39,15 @@ the inherited CJK fallbacks.
 (ROLE
  :stack STACK
  :extends PARENT-ROLE
- :fonts (PREFERRED-ASCII-FAMILY ...)
+ :ascii (PREFERRED-ASCII-FAMILY ...)
  FACE-ATTRIBUTE VALUE ...)
 ```
 
-A role inherits and then overrides its parent role.  `:fonts` prepends
-role-specific ASCII candidates to the selected stack; CJK candidates always
-come from the stack.  Remaining properties such as `:height` and `:weight`
-become face attributes.  This keeps language-specific code roles on one CJK
-monospace fallback while allowing `JetBrains Mono`, `Cascadia Code`, or another
-Latin family to take priority for a particular language group.
+A role inherits and then overrides its parent role.  `:ascii`, `:cjk`,
+`:symbol`, `:mathematical`, and `:emoji` prepend role-specific candidates to
+the corresponding category in the selected stack.  Remaining properties such
+as `:height` and `:weight` become face attributes.  This lets a role customize
+one or more scripts while retaining the stack's fallback candidates.
 
 The current roles form this hierarchy:
 
@@ -71,11 +70,12 @@ continue to use the base definition.
 | Preset | Primary typography | Intended context |
 | --- | --- | --- |
 | `modern` | Cohesive Inter sans serif, including restrained italic quotes | Contemporary notes and documentation |
+| `apple` | SF Pro Display headings with SF Pro Text body and interface text | Native macOS notes and documentation |
 | `classical` | Garamond/Athelas display with old-style serif prose | Essays, literature, and traditional documents |
 | `technical` | DIN/Avenir structure, STIX prose, and SF Mono utility text | Scientific and engineering material |
 
-Preset entries use the same role names and can override `:stack`, `:fonts`,
-`:height`, `:weight`, `:slant`, or `:width`.
+Preset entries use the same role names and can override `:stack`, any font
+category, `:height`, `:weight`, `:slant`, or `:width`.
 
 Two automatically buffer-local variables select and refine the effective
 preset:
@@ -84,16 +84,16 @@ preset:
 (setq-local prosody-buffer-preset 'technical)
 (setq-local prosody-buffer-overrides
             '((prose :stack sans-serif)
-              (code-python :fonts ("Iosevka"))))
+              (code-python :ascii ("Iosevka"))))
 (prosody-refresh-buffer)
 ```
 
 The resolution order, from highest to lowest priority, is
 `prosody-buffer-overrides`, the selected entry in `prosody-presets`,
-the base `prosody-roles`, and inherited role properties.  `:fonts` replaces
-the role's own preferred ASCII list but keeps its stack as fallback.  A parent
-role override is visible to descendants, so changing `code` also changes the
-stack inherited by `code-python`.
+the base `prosody-roles`, and inherited role properties.  A category property
+replaces the role's own preferred list but keeps its stack as fallback.  A
+parent role override is visible to descendants, so changing `code` also
+changes the stack inherited by `code-python`.
 
 Use `M-x prosody-select-preset` for an interactive buffer-local
 selection.  Choosing `<base>` explicitly ignores a non-nil default preset;
@@ -104,7 +104,7 @@ validates:
 ```text
 ;; Local Variables:
 ;; prosody-buffer-preset: classical
-;; prosody-buffer-overrides: ((code :fonts ("SF Mono")))
+;; prosody-buffer-overrides: ((code :ascii ("SF Mono")))
 ;; End:
 ```
 
