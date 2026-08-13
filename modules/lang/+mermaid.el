@@ -7,14 +7,18 @@
 (defun cat/mermaid-auto-theme ()
   "Adjust `cat-mermaid-theme' to align with Emacs' current theme."
   (setq-default cat-mermaid-theme (if (+dark-mode-p) "dark" "default")
-                mermaid-flags (format "-b transparent -f -c %s -t %s" cat-mermaid-config-file cat-mermaid-theme)))
+                mermaid-flags (format "-c %s -t %s" cat-mermaid-config-file cat-mermaid-theme))
+  (when (boundp 'org-babel-default-header-args:mermaid)
+    (setf (alist-get :theme org-babel-default-header-args:mermaid)
+          cat-mermaid-theme)))
 
 (use-package mermaid-mode
   :font-rule (code-diagram :modes (mermaid-mode mermaid-ts-mode))
   :ensure-system-package
-  (mmdc . "bun add -g @mermaid-js/mermaid-cli && bunx puppeteer browsers install chrome-headless-shell")
+  (mmdr . "cargo install mermaid-rs-renderer")
   :mode "\\.mmd\\'"
   :custom
+  (mermaid-mmdc-location "mmdr")
   (mermaid-tmp-dir (expand-file-name "mermaid/" cat-cache-dir))
   (mermaid-output-format ".svg")
   :config
@@ -28,42 +32,17 @@
 
 (add-hook 'mermaid-mode-hook #'cat/mermaid-mode)
 
-(with-eval-after-load 'mermaid-mode
-  (defun org-babel-execute:mermaid (body params)
-    (let* ((out-file (or (cdr (assoc :file params))
-                         (error "mermaid requires a \":file\" header argument")))
-           (theme (or (cdr (assoc :theme params)) cat-mermaid-theme))
-           (width (cdr (assoc :width params)))
-           (height (cdr (assoc :height params)))
-           (background-color (cdr (assoc :background-color params)))
-           (mermaid-config-file (or (cdr (assoc :mermaid-config-file params)) cat-mermaid-config-file))
-           (css-file (cdr (assoc :css-file params)))
-           (pupeteer-config-file (cdr (assoc :pupeteer-config-file params)))
-           (temp-file (org-babel-temp-file "mermaid-"))
-           (mmdc (or (executable-find mermaid-mmdc-location)
-                     (error "`mermaid-mmdc-location' is not set and mmdc is not in `exec-path'")))
-           (cmd (concat (shell-quote-argument (expand-file-name mmdc))
-                        " -i " (org-babel-process-file-name temp-file)
-                        " -o " (org-babel-process-file-name out-file)
-                        (when theme
-                          (concat " -t " theme))
-                        (when background-color
-                          (concat " -b " background-color))
-                        (when width
-                          (concat " -w " (number-to-string width)))
-                        (when height
-                          (concat " -H " (number-to-string height)))
-                        (when mermaid-config-file
-                          (concat " -c " (org-babel-process-file-name mermaid-config-file)))
-                        (when css-file
-                          (concat " -C " (org-babel-process-file-name css-file)))
-                        (when pupeteer-config-file
-                          (concat " -p " (org-babel-process-file-name pupeteer-config-file))))))
-      (unless (file-executable-p mmdc)
-        ;; cannot happen with `executable-find', so we complain about
-        ;; `mermaid-mmdc-location'
-        (error "Cannot find or execute %s, please check `mermaid-mmdc-location'" mmdc))
-      (with-temp-file temp-file (insert body))
-      (message "%s" cmd)
-      (org-babel-eval cmd "")
-      nil)))
+(use-package ob-mermaid
+  :demand t
+  :after org
+  :custom
+  (ob-mermaid-cli-path "mmdr")
+  (ob-mermaid-default-config-file cat-mermaid-config-file)
+  :config
+  (add-to-list 'org-babel-load-languages '(mermaid . t))
+  (cat/mermaid-auto-theme)
+  (defalias 'cat/ob-mermaid-execute
+    (symbol-function 'org-babel-execute:mermaid))
+  ;; `mermaid-mode' also defines this executor; keep ob-mermaid authoritative.
+  (with-eval-after-load 'mermaid-mode
+    (defalias 'org-babel-execute:mermaid #'cat/ob-mermaid-execute)))
