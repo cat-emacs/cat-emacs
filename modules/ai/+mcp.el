@@ -14,6 +14,7 @@
   :custom
   (mcp-server-lib-install-directory cat-etc-dir)
   :config
+  (mcp-server-lib-uninstall)
   (mcp-server-lib-install))
 
 (use-package elisp-dev-mcp
