@@ -63,7 +63,7 @@
      (metadata-value :stack monospace-narrow)
      (mono :stack monospace-sans-serif)
      (code :stack monospace-code)
-     (table :stack monospace-align)
+     (table :stack monospace-narrow)
      (code-jvm :extends code :ascii ("JetBrains Mono"))
      (code-python :extends code :ascii ("Cascadia Code"))
      (code-diagram :extends code :ascii ("Fira Code"))
