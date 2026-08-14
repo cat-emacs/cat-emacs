@@ -9,13 +9,14 @@
   (mcp-server-socket-directory cat-cache-dir))
 
 (use-package mcp-server-lib
+  :command mcp-server-lib-installed-script-path
   :hook
   (cat-idle-preload . mcp-server-lib-start)
   :custom
   (mcp-server-lib-install-directory cat-etc-dir)
   :config
-  (mcp-server-lib-uninstall)
-  (mcp-server-lib-install))
+  (unless (file-exists-p (mcp-server-lib-installed-script-path))
+    (mcp-server-lib-install)))
 
 (use-package elisp-dev-mcp
   :hook
