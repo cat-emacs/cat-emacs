@@ -20,8 +20,8 @@
   (org-mcp-allowed-files
    (directory-files-recursively cat-org-directory "\\.org\\'")))
 
-(use-package mcp-server-lib
-  :commands mcp-server-lib-installed-script-path
+(use-package mcp-server-lib-commands
+  :ensure mcp-server-lib
   :hook
   (cat-idle-preload . mcp-server-lib-start)
   :custom
