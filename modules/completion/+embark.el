@@ -6,7 +6,7 @@
   ("C-M->" . embark-dwim)
   ("C-h B" . embark-bindings)
   (:map embark-general-map
-        ("G" . cat/embark-google-search))
+        ("G" . cat/embark-webjump))
   (:map embark-variable-map
         (":" . cat/embark-act-with-eval))
   (:map embark-expression-map
@@ -22,10 +22,14 @@
                '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
                  nil
                  (window-parameters (mode-line-format . none))))
-  (defun cat/embark-google-search (term)
-    (interactive "sSearch Term: ")
-    (browse-url
-     (format "http://google.com/search?q=%s" term)))
+  (defun cat/embark-webjump (term)
+    "Open a WebJump site using TERM as its query."
+    (interactive "sWebJump query: ")
+    (require 'webjump)
+    (require 'cl-lib)
+    (cl-letf (((symbol-function 'webjump-read-string)
+               (lambda (_prompt) term)))
+      (webjump)))
   (defun cat/embark-act-with-eval (expression)
     "Evaluate EXPRESSION and call `embark-act' on the result."
     (interactive "sExpression: ")
@@ -77,9 +81,9 @@ targets."
          (if (eq (plist-get (car targets) :type) 'embark-become)
              "Become"
            (format "Act on %s '%s'%s"
-                     (plist-get (car targets) :type)
-                     (embark--truncate-target (plist-get (car targets) :target))
-                     (if (cdr targets) "…" "")))
+                   (plist-get (car targets) :type)
+                   (embark--truncate-target (plist-get (car targets) :target))
+                   (if (cdr targets) "…" "")))
          (if prefix
              (pcase (lookup-key keymap prefix 'accept-default)
                ((and (pred keymapp) km) km)
