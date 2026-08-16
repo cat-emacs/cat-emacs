@@ -21,8 +21,11 @@
 (use-package no-littering
   :demand
   :init
-  (setq no-littering-etc-directory cat-etc-dir
-        no-littering-var-directory cat-cache-dir)
+  (unless (catp! 'auto 'treesit)
+    (defvar treesit-auto-install-grammar nil))
+  (setq
+   no-littering-etc-directory cat-etc-dir
+   no-littering-var-directory cat-cache-dir)
   :config
   (no-littering-theme-backups)
   (let ((dir (no-littering-expand-var-file-name "lock-files/")))
