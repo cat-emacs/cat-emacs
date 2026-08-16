@@ -135,6 +135,7 @@ Invokes CALLBACK with the generated message when done."
 (use-package templatel)
 
 (use-package chatgpt-shell
+  :cat
   :custom
   (chatgpt-shell-root-path (concat cat-local-dir "shell-maker/"))
   (chatgpt-shell-model-version "gemma4")
