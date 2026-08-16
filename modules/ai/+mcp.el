@@ -21,7 +21,7 @@
    (directory-files-recursively cat-org-directory "\\.org\\'")))
 
 (use-package mcp-server-lib
-  :command mcp-server-lib-installed-script-path
+  :commands mcp-server-lib-installed-script-path
   :hook
   (cat-idle-preload . mcp-server-lib-start)
   :custom
