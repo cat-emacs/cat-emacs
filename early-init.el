@@ -1,5 +1,22 @@
 ;; -*- lexical-binding: t; -*-
 
+;;; startup
+;; Defer GC and file-name handlers until startup finishes, then restore
+;; them, keeping handlers registered during startup.
+(let ((initial-gc-cons-threshold gc-cons-threshold)
+      (initial-gc-cons-percentage gc-cons-percentage)
+      (initial-file-name-handler-alist file-name-handler-alist))
+  (setq gc-cons-threshold most-positive-fixnum
+        gc-cons-percentage 0.6
+        file-name-handler-alist nil)
+  (add-hook 'emacs-startup-hook
+            (lambda ()
+              (setq gc-cons-threshold initial-gc-cons-threshold
+                    gc-cons-percentage initial-gc-cons-percentage
+                    file-name-handler-alist
+                    (delete-dups (append file-name-handler-alist
+                                         initial-file-name-handler-alist))))))
+
 ;;; os
 (defconst EMACS28+   (> emacs-major-version 27))
 (defconst EMACS29+   (> emacs-major-version 28))
@@ -40,6 +57,15 @@
 (+mkdir-p cat-local-dir)
 (+mkdir-p cat-cache-dir)
 (+mkdir-p cat-etc-dir)
+
+;;; ui
+;; Strip bars from the initial frame before it is first drawn; the
+;; corresponding modes are still synchronized in modules/base/+default.el.
+(setq frame-inhibit-implied-resize t)
+(push '(tool-bar-lines . 0) default-frame-alist)
+(push '(vertical-scroll-bars) default-frame-alist)
+(unless IS-ANDROID
+  (push '(menu-bar-lines . 0) default-frame-alist))
 
 ;;; path
 (when IS-ANDROID

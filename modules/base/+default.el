@@ -241,15 +241,13 @@
 
 (defun cat-handle-backspace (string)
   "Interpret backspaces (^H) in STRING like a terminal would."
-  (let ((i 0)
-        (res ""))
-    (while (< i (length string))
+  (let (chars)
+    (dotimes (i (length string))
       (let ((c (aref string i)))
-        (if (and (= c ?\b) (> (length res) 0))
-            (setq res (substring res 0 -1))
-          (setq res (concat res (string c)))))
-      (setq i (1+ i)))
-    res))
+        (if (and (= c ?\b) chars)
+            (setq chars (cdr chars))
+          (push c chars))))
+    (concat (nreverse chars))))
 
 (defun cat/colorize-after-shell-command-on-region (&rest _args)
   "Apply ANSI colors to the `shell-command-buffer-name' buffer and `minibuffer' after `shell-command-on-region'."

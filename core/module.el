@@ -140,18 +140,16 @@ When GROUP is omitted, check every module group."
         (setq group (cat--module-group module)))
        ((and (consp module) (eq (car module) :if))
         (when (eval (cadr module) lexical-binding)
-          (setq declarations
-                (append declarations
-                        (cat--module-declarations (cddr module) group)))))
+          (dolist (declaration (cat--module-declarations (cddr module) group))
+            (push declaration declarations))))
        (t
         (unless group
           (error "Cat module %S has no group" module))
-        (setq declarations
-              (append declarations
-                      (list (list group
-                                  (cat--module-symbol module)
-                                  (cat--module-options module))))))))
-    declarations))
+        (push (list group
+                    (cat--module-symbol module)
+                    (cat--module-options module))
+              declarations))))
+    (nreverse declarations)))
 
 (defun cat! (modules &optional group)
   "Register and load MODULES with grouped declarations like Doom's `doom!':
