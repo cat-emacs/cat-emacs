@@ -1,5 +1,15 @@
 ;; -*- lexical-binding: t; -*-
 
+;;; gc
+;; Keep GC off the hot path after startup; collect when idle instead.
+;; early-init.el skips its GC restore while this mode is enabled.
+(use-package gcmh
+  :delight
+  :hook (after-init . gcmh-mode)
+  :custom
+  (gcmh-idle-delay 'auto)
+  (gcmh-high-cons-threshold (* 16 1024 1024)))
+
 ;;; ui
 (use-package frame
   :ensure nil

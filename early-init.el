@@ -11,9 +11,11 @@
         file-name-handler-alist nil)
   (add-hook 'emacs-startup-hook
             (lambda ()
-              (setq gc-cons-threshold initial-gc-cons-threshold
-                    gc-cons-percentage initial-gc-cons-percentage
-                    file-name-handler-alist
+              ;; gcmh owns the steady-state GC tuning when it is enabled.
+              (unless (bound-and-true-p gcmh-mode)
+                (setq gc-cons-threshold initial-gc-cons-threshold
+                      gc-cons-percentage initial-gc-cons-percentage))
+              (setq file-name-handler-alist
                     (delete-dups (append file-name-handler-alist
                                          initial-file-name-handler-alist))))))
 
@@ -57,6 +59,13 @@
 (+mkdir-p cat-local-dir)
 (+mkdir-p cat-cache-dir)
 (+mkdir-p cat-etc-dir)
+
+;;; package
+;; `package-activate-all' runs between early init and init, so quickstart
+;; must be enabled here.  The file path matches the no-littering var
+;; directory configured in modules/base/+package.el.
+(setq package-quickstart t
+      package-quickstart-file (concat cat-cache-dir "package-quickstart.el"))
 
 ;;; ui
 ;; Strip bars from the initial frame before it is first drawn; the

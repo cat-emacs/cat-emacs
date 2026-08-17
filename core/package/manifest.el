@@ -314,6 +314,13 @@ The generated data is intended for build caching, not manual maintenance."
        (setq cat-package--elpa-roots elpa-packages
              cat-package--vc-roots vc-packages)))))
 
+(defun cat-package--refresh-quickstart ()
+  "Regenerate the quickstart file to match the installed packages.
+package.el refreshes it after installs and deletions, but not after
+`package-vc-upgrade-all', and the file must be created once initially."
+  (when (bound-and-true-p package-quickstart)
+    (package-quickstart-refresh)))
+
 (defun cat-package-sync ()
   "Install and remove packages to match the active Cat configuration."
   (interactive)
@@ -333,7 +340,8 @@ The generated data is intended for build caching, not manual maintenance."
            (let ((package-vc-selected-packages vc-packages))
              (package-vc-install-selected-packages))
            (let ((package-selected-packages package-roots))
-             (package-autoremove))))
+             (package-autoremove))
+           (cat-package--refresh-quickstart)))
       (setq package-selected-packages previous-selection
             package-vc-selected-packages previous-vc-selection))))
 
@@ -355,7 +363,8 @@ The generated data is intended for build caching, not manual maintenance."
                      (seq-some #'package-vc-p (cdr entry)))
                    package-alist)))
              (package-upgrade-all nil))
-           (package-vc-upgrade-all)))
+           (package-vc-upgrade-all)
+           (cat-package--refresh-quickstart)))
       (setq package-selected-packages previous-selection
             package-vc-selected-packages previous-vc-selection))))
 
