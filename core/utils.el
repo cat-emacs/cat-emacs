@@ -12,15 +12,19 @@
   (nth (random (length list)) list))
 
 (defun +url-get-query-content (key &optional url)
-  "Get query value from key in url or clipboard."
+  "Get query value for KEY in URL or clipboard.
+Return nil when the query does not contain KEY."
+  (require 'url-parse)
   (when (null url)
     (setq url (with-temp-buffer (clipboard-yank) (buffer-string))))
-  (let ((query (cdr (url-path-and-query (url-generic-parse-url url))))
-        value)
-    (when query
-      (if (string-match (format "\\(%s=\\).*?\\(&\\)" key) query)
-          (setq value (substring query (match-end 1) (match-beginning 2)))))
-    (decode-coding-string (url-unhex-string value) 'utf-8)))
+  (let ((query (cdr (url-path-and-query (url-generic-parse-url url)))))
+    (when (and query
+               (string-match (concat "\\(?:\\`\\|&\\)"
+                                     (regexp-quote key)
+                                     "=\\([^&]*\\)")
+                             query))
+      (decode-coding-string (url-unhex-string (match-string 1 query))
+                            'utf-8))))
 
 (cl-flet ((always-yes (&rest _) t))
   (defun +no-confirm (fun &rest args)
