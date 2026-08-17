@@ -55,11 +55,51 @@
   (when IS-MAC
     (setq org-dial-program "open tel:")))
 
+(defcustom cat-org-cliplink-title-replacements nil
+  "Rules for rewriting titles after org-cliplink fetches them.
+
+Each rule is either
+  (TITLE-REGEXP REPLACEMENT)
+or
+  (URL-REGEXP TITLE-REGEXP REPLACEMENT).
+
+All matching rules run in order.  TITLE-REGEXP is passed to
+`replace-regexp-in-string'.  When URL-REGEXP is present, the rule
+applies only if it matches the page URL."
+  :type '(repeat (choice
+                  (list :tag "Title"
+                        (regexp :tag "Title regexp")
+                        (string :tag "Replacement"))
+                  (list :tag "URL and title"
+                        (regexp :tag "URL regexp")
+                        (regexp :tag "Title regexp")
+                        (string :tag "Replacement"))))
+  :group 'cat-emacs)
+
+(defun cat/org-cliplink-apply-title-replacements (url title)
+  "Apply `cat-org-cliplink-title-replacements' to TITLE for URL."
+  (when title
+    (dolist (rule cat-org-cliplink-title-replacements title)
+      (pcase rule
+        (`(,title-re ,rep)
+         (setq title (replace-regexp-in-string title-re rep title)))
+        (`(,url-re ,title-re ,rep)
+         (when (and url (string-match-p url-re url))
+           (setq title (replace-regexp-in-string title-re rep title))))))))
+
+(defun cat/org-cliplink-title-for-url (orig-fun url title)
+  "Apply configured title replacements after ORIG-FUN."
+  (cat/org-cliplink-apply-title-replacements
+   url (funcall orig-fun url title)))
+
 (use-package org-cliplink
   :major-transient
   (org-mode
    ["Plugin"
-    ("c" "cliplink" org-cliplink)]))
+    ("c" "cliplink" org-cliplink)])
+  :config
+  (advice-add 'org-cliplink-title-for-url :around
+              #'cat/org-cliplink-title-for-url))
 
 (use-package org-link-beautify
   :pin melpa-stable
