@@ -66,6 +66,18 @@
 ;; directory configured in modules/base/+package.el.
 (setq package-quickstart t
       package-quickstart-file (concat cat-cache-dir "package-quickstart.el"))
+;; The concatenated autoload file is large enough that native-compiling it
+;; can exhaust CI runners; the byte-compiled file is sufficient.
+;; `comp-run' defines this list, so attach after it loads.
+(let ((quickstart-native-comp-deny
+       (concat "\\`"
+               (regexp-quote (expand-file-name package-quickstart-file)))))
+  (if (boundp 'native-comp-jit-compilation-deny-list)
+      (add-to-list 'native-comp-jit-compilation-deny-list
+                   quickstart-native-comp-deny)
+    (with-eval-after-load 'comp-run
+      (add-to-list 'native-comp-jit-compilation-deny-list
+                   quickstart-native-comp-deny))))
 
 ;;; ui
 ;; Strip bars from the initial frame before it is first drawn; the

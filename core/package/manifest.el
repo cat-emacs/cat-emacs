@@ -92,18 +92,45 @@ In-memory changes to package selection variables are preserved."
                    (funcall save-variable variable value comment)))))
       (funcall function))))
 
+(defvar cat-package--quickstart-needs-refresh nil
+  "Non-nil when a deferred `package-quickstart-refresh' is pending.")
+
+(defun cat-package--without-quickstart-refresh (function)
+  "Call FUNCTION without regenerating `package-quickstart-file'.
+package.el rebuilds and byte-compiles that concatenated autoload file
+after every install or deletion.  Remember whether a refresh was
+requested so the caller can do it once."
+  (cl-letf (((symbol-function 'package--quickstart-maybe-refresh)
+             (lambda ()
+               (setq cat-package--quickstart-needs-refresh t))))
+    (funcall function)))
+
+(defun cat-package--refresh-quickstart (&optional force)
+  "Regenerate the quickstart file to match the installed packages.
+Refresh when FORCE is non-nil or a deferred refresh is pending.
+package.el refreshes it after installs and deletions, but not after
+`package-vc-upgrade-all', and the file must be created once initially."
+  (when (and (bound-and-true-p package-quickstart)
+             (or force cat-package--quickstart-needs-refresh))
+    (setq cat-package--quickstart-needs-refresh nil)
+    (package-quickstart-refresh)))
+
 (defun cat-package-install (package)
   "Install PACKAGE without persisting derived package selection."
   (cat-package--without-persisting-selection
    (lambda ()
-     (package-install package))))
+     (cat-package--without-quickstart-refresh
+      (lambda ()
+        (package-install package))))))
 
 (defun cat-package-vc-install (spec)
   "Install package-vc SPEC without persisting derived package selection."
   (require 'package-vc)
   (cat-package--without-persisting-selection
    (lambda ()
-     (package-vc-install spec))))
+     (cat-package--without-quickstart-refresh
+      (lambda ()
+        (package-vc-install spec))))))
 
 (defun cat-package--use-package-ensure (name args state)
   "Record use-package NAME with ensure ARGS, then call the package backend.
@@ -213,7 +240,8 @@ nonlocal exit."
     (unwind-protect
         (condition-case err
             (progn
-              (setq result (funcall function))
+              (setq result
+                    (cat-package--without-quickstart-refresh function))
               (cat-package--activate-manifest)
               (setq cat-package-manifest-state 'ready
                     succeeded t)
@@ -227,7 +255,10 @@ nonlocal exit."
               cat-package--vc-roots previous-vc-roots
               package-selected-packages previous-selection
               package-vc-selected-packages previous-vc-selection)
-        (cat-package--restore-font-rules previous-font-rules)))))
+        (cat-package--restore-font-rules previous-font-rules)))
+    (when succeeded
+      (cat-package--refresh-quickstart))
+    result))
 
 (defun cat-package--require-ready-manifest ()
   "Signal a user error unless the package manifest is ready."
@@ -314,13 +345,6 @@ The generated data is intended for build caching, not manual maintenance."
        (setq cat-package--elpa-roots elpa-packages
              cat-package--vc-roots vc-packages)))))
 
-(defun cat-package--refresh-quickstart ()
-  "Regenerate the quickstart file to match the installed packages.
-package.el refreshes it after installs and deletions, but not after
-`package-vc-upgrade-all', and the file must be created once initially."
-  (when (bound-and-true-p package-quickstart)
-    (package-quickstart-refresh)))
-
 (defun cat-package-sync ()
   "Install and remove packages to match the active Cat configuration."
   (interactive)
@@ -335,13 +359,15 @@ package.el refreshes it after installs and deletions, but not after
     (unwind-protect
         (cat-package--without-persisting-selection
          (lambda ()
-           (let ((package-selected-packages elpa-packages))
-             (package-install-selected-packages t))
-           (let ((package-vc-selected-packages vc-packages))
-             (package-vc-install-selected-packages))
-           (let ((package-selected-packages package-roots))
-             (package-autoremove))
-           (cat-package--refresh-quickstart)))
+           (cat-package--without-quickstart-refresh
+            (lambda ()
+              (let ((package-selected-packages elpa-packages))
+                (package-install-selected-packages t))
+              (let ((package-vc-selected-packages vc-packages))
+                (package-vc-install-selected-packages))
+              (let ((package-selected-packages package-roots))
+                (package-autoremove))))
+           (cat-package--refresh-quickstart t)))
       (setq package-selected-packages previous-selection
             package-vc-selected-packages previous-vc-selection))))
 
@@ -357,14 +383,16 @@ package.el refreshes it after installs and deletions, but not after
          (lambda ()
            ;; Emacs 30 includes VC descriptors in `package-upgrade-all';
            ;; upgrade them once through package-vc below.
-           (let ((package-alist
-                  (seq-remove
-                   (lambda (entry)
-                     (seq-some #'package-vc-p (cdr entry)))
-                   package-alist)))
-             (package-upgrade-all nil))
-           (package-vc-upgrade-all)
-           (cat-package--refresh-quickstart)))
+           (cat-package--without-quickstart-refresh
+            (lambda ()
+              (let ((package-alist
+                     (seq-remove
+                      (lambda (entry)
+                        (seq-some #'package-vc-p (cdr entry)))
+                      package-alist)))
+                (package-upgrade-all nil))
+              (package-vc-upgrade-all)))
+           (cat-package--refresh-quickstart t)))
       (setq package-selected-packages previous-selection
             package-vc-selected-packages previous-vc-selection))))
 
