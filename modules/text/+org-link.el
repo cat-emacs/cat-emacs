@@ -103,7 +103,6 @@ applies only if it matches the page URL."
 
 (use-package org-link-beautify
   :pin melpa-stable
-  :demand t
   :after org
   :custom
   (org-link-beautify-thumbnails-dir 'user-home)
