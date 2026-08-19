@@ -20,8 +20,11 @@
 
 (use-package ob-lob
   :ensure nil
+  :after org
   :config
-  (org-babel-lob-ingest (cat-config-file "library-of-babel.org")))
+  (let ((file (cat-config-file "library-of-babel.org")))
+    (when (file-readable-p file)
+      (org-babel-lob-ingest file))))
 
 (use-package ob-async
   :vc (:url "https://github.com/ezchi/ob-async"
