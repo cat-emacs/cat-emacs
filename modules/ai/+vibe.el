@@ -104,8 +104,7 @@ Invokes CALLBACK with the generated message when done."
       (gptel-magit--request diff
         :system gptel-magit-commit-prompt
         :context nil
-        :callback (lambda (response info)
-                    (print info)
+        :callback (lambda (response _info)
                     (when (and (stringp response)
                                (not (string-empty-p response)))
                       (funcall callback response)))))))

@@ -7,8 +7,22 @@
   :group 'Emacs
   :version "29.3")
 
+(defconst cat-xdg-config-home
+  (let ((dir (getenv "XDG_CONFIG_HOME")))
+    (expand-file-name (if (and dir (not (string-empty-p dir)))
+                          dir
+                        "~/.config")))
+  "User XDG configuration directory.")
+
+(defconst cat-xdg-data-home
+  (let ((dir (getenv "XDG_DATA_HOME")))
+    (expand-file-name (if (and dir (not (string-empty-p dir)))
+                          dir
+                        "~/.local/share")))
+  "User XDG data directory.")
+
 (defcustom cat-user-directory
-  (expand-file-name "cat-emacs/" (or (getenv "XDG_CONFIG_HOME") "~/.config"))
+  (expand-file-name "cat-emacs/" cat-xdg-config-home)
   "Directory for Cat Emacs user configuration."
   :type 'directory
   :group 'cat-emacs)

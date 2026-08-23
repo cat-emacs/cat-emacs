@@ -121,7 +121,7 @@
   (completion-auto-help 'visible)
   (minibuffer-prompt-properties '(read-only t cursor-intangible t face minibuffer-prompt)))
 
-(savehist-mode)
+(add-hook 'after-init-hook #'savehist-mode)
 
 ;;; recentf
 (setq recentf-max-saved-items 100)

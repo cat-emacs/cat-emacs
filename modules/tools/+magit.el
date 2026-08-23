@@ -16,8 +16,8 @@ Each entry has the same format as an entry in `forge-alist'."
   :custom
   (magit-blame-mode-lighter (+with-icon "nf-oct-history" " "))
   (magit-repository-directories `(("~/Developer/" . 5)
-                                  (,(getenv "XDG_CONFIG_HOME") . 3)
-                                  (,(getenv "XDG_DATA_HOME") . 3)
+                                  (,cat-xdg-config-home . 3)
+                                  (,cat-xdg-data-home . 3)
                                   (,cat-pass-directory . 0)))
   (magit-diff-refine-hunk t)
   (magit-diff-fontify-hunk t)

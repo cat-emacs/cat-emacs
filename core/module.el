@@ -175,7 +175,8 @@ When GROUP is omitted, check every module group."
   (with-temp-buffer
     (insert-file-contents file)
     (goto-char (point-min))
-    (let ((data (read (current-buffer))))
+    (let* ((read-eval nil)
+           (data (read (current-buffer))))
       (with-syntax-table emacs-lisp-mode-syntax-table
         (forward-comment (point-max)))
       (unless (eobp)
@@ -184,15 +185,27 @@ When GROUP is omitted, check every module group."
 
 (defun cat-load-modules (&optional modules-file)
   "Load Cat module declarations from the data in MODULES-FILE.
-When MODULES-FILE is nil, read the configured cats file."
+When MODULES-FILE is nil, read the configured cats file.
+Restore the previous module registry after any nonlocal exit."
   (let* ((file (or modules-file (cat-config-file "cats")))
-         (modules (cat--read-data-file file)))
+         (modules (cat--read-data-file file))
+         (previous-options cat-module-options)
+         (previous-enabled cat-modules-enabled)
+         (previous-loaded cat-modules-loaded-p)
+         succeeded)
     (unless (listp modules)
       (error "Cat module data in %s is not a list" file))
     (setq cat-module-options nil
           cat-modules-enabled nil
           cat-modules-loaded-p nil)
-    (cat! modules)
-    (setq cat-modules-loaded-p t)))
+    (unwind-protect
+        (progn
+          (cat! modules)
+          (setq cat-modules-loaded-p t
+                succeeded t))
+      (unless succeeded
+        (setq cat-module-options previous-options
+              cat-modules-enabled previous-enabled
+              cat-modules-loaded-p previous-loaded)))))
 
 (provide 'cat-module)

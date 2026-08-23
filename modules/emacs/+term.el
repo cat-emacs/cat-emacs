@@ -112,7 +112,8 @@
   :vc (:url "https://github.com/cashmeredev/kitty-graphics.el")
   :delight (kitty-graphics-mode
             (:eval (+with-icon "nf-md-watermark" " ")))
-  :when (not (display-graphic-p))
+  :when (and (not (daemonp))
+             (not (display-graphic-p)))
   :custom
   (kitty-gfx-enable-video t)
   :config

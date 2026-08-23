@@ -13,7 +13,7 @@
         '("latexindent" "-l" "--logfile=/dev/null"))
   (setf (alist-get 'dprint apheleia-formatters)
         `("dprint" "fmt" "--stdin" filepath "--config"
-          ,(expand-file-name "dprint.json" (getenv "XDG_CONFIG_HOME"))))
+          ,(expand-file-name "dprint.json" cat-xdg-config-home)))
   (add-to-list 'apheleia-mode-alist
                '(toml-ts-mode . dprint))
   (add-to-list 'apheleia-skip-functions

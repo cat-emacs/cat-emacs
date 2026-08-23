@@ -10,8 +10,9 @@
   :commands #'toggle-input-method)
 
 (when IS-MAC
-  (setq rime-librime-root (getenv "HOMEBREW_PREFIX")
-        rime-emacs-module-header-root (concat (getenv "HOMEBREW_PREFIX") "/include")))
+  (when-let* ((prefix (getenv "HOMEBREW_PREFIX")))
+    (setq rime-librime-root prefix
+          rime-emacs-module-header-root (expand-file-name "include" prefix))))
 
 (setq
  rime-user-data-dir cat-rime-directory

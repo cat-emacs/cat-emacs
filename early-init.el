@@ -31,8 +31,13 @@
 (defconst IS-LINUX   (eq system-type 'gnu/linux))
 (defconst IS-ANDROID (string-equal system-type "android"))
 (defconst IS-WINDOWS (memq system-type '(cygwin windows-nt ms-dos)))
-(defconst IS-MINGW64 (and IS-WINDOWS (string-match "mingw64" (getenv "emacs_dir"))))
-(defconst IS-WSL     (string-match-p "WSL2" operating-system-release))
+(defconst IS-MINGW64
+  (and IS-WINDOWS
+       (let ((emacs-dir (getenv "emacs_dir")))
+         (and emacs-dir (string-match-p "mingw64" emacs-dir)))))
+(defconst IS-WSL
+  (and (stringp operating-system-release)
+       (string-match-p "WSL2" operating-system-release)))
 (defconst IS-CI      (getenv "CI"))
 (defconst STIPPLE-COMPATIBLE-P
   (not (or (and IS-MACPLUS (not EMACS31+))
