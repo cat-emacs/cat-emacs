@@ -88,26 +88,11 @@ file name is resolved from the user or fallback template directory by
           :stream t)))
 
 (use-package gptel-magit
+  :vc (:url "https://github.com/roife/gptel-magit")
   :hook (magit-mode . gptel-magit-install)
   :custom
-  (gptel-magit-commit-prompt (gptel-prompts-poet (cat-config-file "prompt/git-commit.yml.j2")))
-  :config
-  (defun gptel-magit--generate (callback)
-    "Generate a commit message for current magit repo.
-Invokes CALLBACK with the generated message when done."
-    (let ((gptel-include-reasoning nil)
-          (gptel--request-params (if (eq gptel-magit-backend gptel--openrouter)
-                                     (list :reasoning (list :exclude t
-                                                            :effort "minimal"))
-                                   nil))
-          (diff (magit-git-output "diff" "--cached")))
-      (gptel-magit--request diff
-        :system gptel-magit-commit-prompt
-        :context nil
-        :callback (lambda (response _info)
-                    (when (and (stringp response)
-                               (not (string-empty-p response)))
-                      (funcall callback response)))))))
+  (gptel-magit-commit-prompt
+   (gptel-prompts-poet (cat-config-file "prompt/git-commit.yml.j2"))))
 
 (use-package gptel-forge-prs
   :hook (forge-post-mode . gptel-forge-prs-install)
