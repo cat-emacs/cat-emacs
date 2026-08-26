@@ -107,6 +107,16 @@
                  (IS-MAC
                   "\\|.DS_Store")))))
 
+(use-package dired-git-info
+  :vc (:url "https://github.com/cat-emacs/dired-git-info")
+  :commands (dired-git-info-mode dired-git-info-auto-enable)
+  :after dired
+  :custom
+  (dgi-commit-message-format "%an: %s\t%cr")
+  :bind
+  (:map dired-mode-map
+        (")" . dired-git-info-mode)))
+
 (use-package nerd-icons-dired
   :delight (nerd-icons-dired-mode
             (:eval (+with-icon "nf-fa-fonticons" " ")))
