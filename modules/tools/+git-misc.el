@@ -26,3 +26,17 @@
    ["Code Review"
     ("r" "code review forge" code-review-forge-pr-at-point)
     ("R" "code review start" code-review-start)]))
+
+(use-package blame-reveal
+  :cat blame
+  :vc (:url "https://github.com/LuciusChen/blame-reveal")
+  :commands (blame-reveal-mode blame-reveal-global-mode)
+  :config
+  (require 'blame-reveal-recursive)
+  (require 'blame-reveal-focus)
+  (require 'blame-reveal-transient)
+  :transient
+  (cat-git-misc
+   ["Blame Reveal"
+    ("b" "toggle buffer" blame-reveal-mode)
+    ("B" "toggle globally" blame-reveal-global-mode)]))
