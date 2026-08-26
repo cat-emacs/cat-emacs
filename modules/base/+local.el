@@ -20,6 +20,13 @@
   (diary-nongregorian-listing-hook '(diary-chinese-list-entries))
   (diary-nongregorian-marking-hook '(diary-chinese-mark-entries)))
 
+(use-package emt
+  :vc (:url "https://github.com/LuciusChen/emt")
+  :custom
+  (emt-lib-path
+   (expand-file-name (concat "emt/libemt_module" module-file-suffix)
+                     cat-etc-dir)))
+
 (use-package pinyin-search
   :bind
   (:map search-map

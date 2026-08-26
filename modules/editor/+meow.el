@@ -133,6 +133,13 @@
                                        (motion . "🅜")
                                        (keypad . "🅚"))))
 
+(use-package meow-cjk
+  :vc (:url "https://github.com/LuciusChen/meow-cjk")
+  :demand t
+  :after meow
+  :config
+  (meow-cjk-mode 1))
+
 (with-eval-after-load 'nano-modeline
   (defun cat/nano-modeline-meow-indicator (args)
     (cl-destructuring-bind (left right face-prefix) args
