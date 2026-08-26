@@ -29,7 +29,9 @@
 
 (use-package blame-reveal
   :cat blame
-  :vc (:url "https://github.com/LuciusChen/blame-reveal")
+  ;; Avoid the upstream focus module's self-referential package dependency.
+  :vc (:url "https://github.com/LuciusChen/blame-reveal"
+       :ignored-files ("blame-reveal-focus.el"))
   :commands (blame-reveal-mode blame-reveal-global-mode)
   :config
   (require 'blame-reveal-recursive)
