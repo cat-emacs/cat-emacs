@@ -1,5 +1,11 @@
 ;; -*- lexical-binding: t; -*-
 
+;; Batch checks may load init.el directly, bypassing Emacs's early-init phase.
+(unless (featurep 'cat-early-init)
+  (let ((init-directory (file-name-directory load-file-name)))
+    (load (expand-file-name "early-init" init-directory) nil 'nomessage)
+    (package-initialize)))
+
 (cat-benchmark 'beg)
 
 ;;; load-path

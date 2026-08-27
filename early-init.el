@@ -1,5 +1,10 @@
 ;; -*- lexical-binding: t; -*-
 
+;; Keep direct batch loads on the same paths as normal init discovery.
+(when load-file-name
+  (setq user-emacs-directory (file-name-directory load-file-name)
+        package-user-dir (expand-file-name "elpa" user-emacs-directory)))
+
 ;;; startup
 ;; Defer GC and file-name handlers until startup finishes, then restore
 ;; them, keeping handlers registered during startup.
@@ -129,3 +134,5 @@
         w32-rwindow-modifier 'super)))
 
 (cat-benchmark 'end)
+
+(provide 'cat-early-init)
