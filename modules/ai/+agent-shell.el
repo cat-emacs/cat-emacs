@@ -42,7 +42,7 @@ per-kind icon from `cat-agent-shell-kind-icons'."
         ("C-c C-p" . agent-shell-ui-backward-block)
         ("C-c C-n" . agent-shell-ui-forward-block))
   :custom
-  (agent-shell-dot-subdir-function #'agent-shell--dot-subdir-in-cache)
+  (agent-shell-dot-subdir-function #'cat/agent-shell--dot-subdir-in-cache)
   (agent-shell-preferred-agent-config '(preselect . pi))
   (agent-shell-header-style 'text)
   (agent-shell-show-welcome-message nil)
@@ -67,13 +67,12 @@ per-kind icon from `cat-agent-shell-kind-icons'."
    ["Shell"
     ("s" "agent-shell" cat-agent-shell)])
   :config
-  (defun agent-shell--dot-subdir-in-cache (subdir)
-    "Return path to agent-shell/SUBDIR under the `cat-cache-dir'.
+  ;; These integrations still expect concrete config alists.
+  (when (fboundp 'agent-shell--resolved-agent-configs)
+    (setq agent-shell-agent-configs
+          (agent-shell--resolved-agent-configs)))
 
-For example:
-
-  (agent-shell--dot-subdir-in-cache \"screenshots\")
-  => \"/path/to/cat-cache-dir/agent-shell/project-dir/screenshots\""
+  (defun cat/agent-shell--dot-subdir-in-cache (subdir)
     (concat cat-cache-dir "agent-shell" (agent-shell-cwd) subdir)))
 
 (use-package agent-shell-sidebar
