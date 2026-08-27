@@ -135,6 +135,7 @@
 
 (use-package meow-cjk
   :vc (:url "https://github.com/LuciusChen/meow-cjk")
+  :delight
   :demand t
   :after meow
   :config
