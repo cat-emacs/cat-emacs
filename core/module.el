@@ -109,10 +109,20 @@ When GROUP is omitted, check every module group."
        (symbolp (car module))
        (not (keywordp (car module)))))
 
+(defun cat--keyword-plist-p (object)
+  "Return non-nil when OBJECT is a proper plist with keyword keys."
+  (and (proper-list-p object)
+       (zerop (mod (length object) 2))
+       (cl-every #'keywordp
+                 (cl-loop for key in object by #'cddr collect key))))
+
 (defun cat--module-options (module)
   "Return the options plist for MODULE."
   (if (cat--module-declaration-p module)
-      (cdr module)
+      (let ((options (cdr module)))
+        (unless (cat--keyword-plist-p options)
+          (error "Cat module %S has invalid options" (car module)))
+        options)
     nil))
 
 (defun cat--module-symbol (module)
@@ -124,31 +134,38 @@ When GROUP is omitted, check every module group."
 (defun cat--register-module-options (group module options)
   "Register OPTIONS for MODULE in GROUP."
   (let ((modules (alist-get group cat-modules-enabled nil nil #'equal)))
+    (when (memq module modules)
+      (error "Duplicate Cat module %s in group %s" module group))
     (setf (alist-get group cat-modules-enabled nil nil #'equal)
-          (cl-adjoin module modules)))
+          (cons module modules)))
   (when options
     (let ((group-options (alist-get group cat-module-options nil nil #'equal)))
       (setf (alist-get module group-options nil nil #'equal) options)
       (setf (alist-get group cat-module-options nil nil #'equal) group-options))))
 
 (defun cat--module-declarations (modules &optional group)
-  "Return enabled declarations from MODULES, starting in GROUP."
+  "Return enabled declarations from MODULES, starting in GROUP.
+`:if' conditions are evaluated as trusted Emacs Lisp."
   (let (declarations)
     (dolist (module modules)
       (cond
        ((keywordp module)
         (setq group (cat--module-group module)))
        ((and (consp module) (eq (car module) :if))
+        (unless (cdr module)
+          (error "Cat :if form %S is missing a condition" module))
         (when (eval (cadr module) lexical-binding)
           (dolist (declaration (cat--module-declarations (cddr module) group))
             (push declaration declarations))))
-       (t
+       ((or (symbolp module) (cat--module-declaration-p module))
         (unless group
           (error "Cat module %S has no group" module))
         (push (list group
                     (cat--module-symbol module)
                     (cat--module-options module))
-              declarations))))
+              declarations))
+       (t
+        (error "Invalid Cat module declaration: %S" module))))
     (nreverse declarations)))
 
 (defun cat! (modules &optional group)
@@ -183,21 +200,38 @@ When GROUP is omitted, check every module group."
         (error "Unexpected extra data in %s" file))
       data)))
 
+(defun cat-module--snapshot-font-rules ()
+  "Return a copy of Prosody rules when its registry is available."
+  (when (fboundp 'prosody-rules)
+    (prosody-rules)))
+
+(defun cat-module--clear-font-rules ()
+  "Clear Prosody rules when its registry is available."
+  (when (fboundp 'prosody-clear-rules)
+    (prosody-clear-rules)))
+
+(defun cat-module--restore-font-rules (rules)
+  "Restore Prosody RULES when its registry is available."
+  (when (fboundp 'prosody-restore-rules)
+    (prosody-restore-rules rules)))
+
 (defun cat-load-modules (&optional modules-file)
   "Load Cat module declarations from the data in MODULES-FILE.
 When MODULES-FILE is nil, read the configured cats file.
-Restore the previous module registry after any nonlocal exit."
+Restore the previous module registry and font rules after any nonlocal exit."
   (let* ((file (or modules-file (cat-config-file "cats")))
          (modules (cat--read-data-file file))
          (previous-options cat-module-options)
          (previous-enabled cat-modules-enabled)
          (previous-loaded cat-modules-loaded-p)
+         (previous-font-rules (cat-module--snapshot-font-rules))
          succeeded)
     (unless (listp modules)
       (error "Cat module data in %s is not a list" file))
     (setq cat-module-options nil
           cat-modules-enabled nil
           cat-modules-loaded-p nil)
+    (cat-module--clear-font-rules)
     (unwind-protect
         (progn
           (cat! modules)
@@ -206,6 +240,7 @@ Restore the previous module registry after any nonlocal exit."
       (unless succeeded
         (setq cat-module-options previous-options
               cat-modules-enabled previous-enabled
-              cat-modules-loaded-p previous-loaded)))))
+              cat-modules-loaded-p previous-loaded)
+        (cat-module--restore-font-rules previous-font-rules)))))
 
 (provide 'cat-module)

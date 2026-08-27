@@ -61,7 +61,21 @@ See `org-cite-csl-styles-dir'."
                      node)))
          (slug (org-roam-node-slug node))
          (file (org-roam-node-file node))
-         (git-time (string-trim (shell-command-to-string (format "git log --diff-filter=A --follow --format='%%aI' -- %s | tail -1" file))))
+         (git-time
+          (or (when-let* ((git-dir (locate-dominating-file file ".git")))
+                (with-temp-buffer
+                  (let* ((default-directory git-dir)
+                         (relative (file-relative-name file default-directory))
+                         (status (call-process "git" nil t nil
+                                               "log" "--diff-filter=A" "--follow"
+                                               "--format=%aI" "--" relative)))
+                    (when (eq status 0)
+                      (goto-char (point-max))
+                      (skip-chars-backward " \t\r\n")
+                      (unless (bobp)
+                        (buffer-substring-no-properties
+                         (line-beginning-position) (point)))))))
+              ""))
          (file-time (file-attribute-modification-time (file-attributes file)))
          (time (if (string-empty-p git-time)
                    file-time

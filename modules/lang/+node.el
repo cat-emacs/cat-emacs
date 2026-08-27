@@ -15,16 +15,14 @@
   :font-rule (code-config :modes (json-mode json-ts-mode))
   :ensure-system-package
   (vscode-json-languageserver . "bun add -g vscode-json-languageserver")
-  :when EMACS29+
-  :demand)
+  :when EMACS29+)
 
 (use-package typescript-ts-mode
   :ensure nil
   :font-rule (code-jvm :modes typescript-ts-base-mode)
   :ensure-system-package
   (typescript-language-server . "bun add -g typescript-language-server")
-  :when EMACS29+
-  :demand)
+  :when EMACS29+)
 
 (use-package ob-typescript
   :demand

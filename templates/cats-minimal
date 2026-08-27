@@ -1,0 +1,33 @@
+;;; -*- lisp-data -*-
+
+(:base
+ package
+ default
+ env
+ local
+ keymap
+
+ :system
+ (:if (daemonp)
+      daemon)
+ (:if IS-MAC
+      macos)
+
+ :ui
+ font
+ doom
+ autodark
+
+ :editor
+ meow
+ avy
+ smartparens
+
+ :completion
+ corfu
+ vertico
+ prescient
+ which-key
+ consult
+ embark
+ yasnippet)

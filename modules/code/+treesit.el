@@ -10,9 +10,7 @@
 (use-package poly-treesit-fold
   :vc (:url "https://github.com/cat-emacs/poly-any-template"
             :lisp-dir "lisp/treesit-fold")
-  :demand t
-  :config
-  (poly-treesit-fold-mode 1))
+  :hook (after-init . poly-treesit-fold-mode))
 
 (use-package treesit-fold
   :delight

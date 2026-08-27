@@ -199,8 +199,10 @@ So we can take advantage of the brew service's schedule function."
 
 (use-package gnus
   :ensure nil
-  :custom
-  (gnus-select-method '(nntp "news.gmane.io"))
+  :defer t
+  :commands gnus
+  :init
+  (setq gnus-select-method '(nntp "news.gmane.io"))
   :transient
   (cat-mail
    ["Gnus"

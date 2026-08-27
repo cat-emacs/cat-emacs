@@ -20,9 +20,12 @@ changes outside the requested scope.
 - `core/core.el` is the single core entry point. Keep its library list in
   explicit dependency order.
 - `core/config.el` owns user/template configuration lookup and Custom loading.
-- `core/module.el` reads the selected `cats` data and loads modules.
+- `core/module.el` reads the selected `cats` data and loads modules. `:if`
+  conditions are trusted Lisp evaluated by the loader.
 - `core/package/` owns package archives, manifest collection, the `:cat`
-  keyword, bootstrap dependencies, synchronization, and upgrades.
+  keyword, bootstrap dependencies, synchronization, and upgrades. Ordinary
+  startup collects declarations without installing; Makefile package targets
+  set `CAT_PACKAGE_PROVISION` when module load must provision missing packages.
 - `modules/<group>/+<name>.el` contains optional feature configuration.
 - `templates/` contains repository defaults. User overrides live under
   `$XDG_CONFIG_HOME/cat-emacs/`, falling back to `$HOME/.config/cat-emacs/`.

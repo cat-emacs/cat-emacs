@@ -186,7 +186,7 @@
   (confirm-kill-emacs #'yes-or-no-p))
 
 (defconst cat-hs-folded-face
-  '((t (:inherit 'font-lock-comment-face :box t)))
+  '((t (:inherit font-lock-comment-face :box t)))
   "Face used to display the fold text.")
 
 (defun cat/hs-folded-overlay-fn (ov)

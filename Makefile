@@ -29,16 +29,21 @@ PACKAGE_SYNC = --funcall cat-package-sync
 PACKAGE_UPGRADE = --funcall cat-package-upgrade
 PACKAGE_SYNC_UPGRADE = $(PACKAGE_SYNC) $(PACKAGE_UPGRADE)
 PACKAGE_ACTION ?= $(PACKAGE_SYNC)
+LISP_FILES ?= $(shell git -C "$(INIT_DIR)" ls-files '*.el')
 
-.PHONY: packages package-manifest sync-package-manifest sync-packages \
+.PHONY: lint packages package-manifest sync-package-manifest sync-packages \
 	upgrade-packages sync-upgrade-packages compile-org
 
+lint:
+	$(EMACS) --batch --eval "(let ((failed 0)) (dolist (file command-line-args-left) (condition-case err (with-temp-buffer (insert-file-contents file) (emacs-lisp-mode) (check-parens)) (error (setq failed 1) (princ (format \"%s: %S\\n\" file err))))) (kill-emacs failed))" $(LISP_FILES)
+	git -C "$(INIT_DIR)" diff --check
+
 packages:
-	yes | $(EMACS_BATCH) $(PACKAGE_BOOTSTRAP) \
+	yes | env CAT_PACKAGE_PROVISION=true $(EMACS_BATCH) $(PACKAGE_BOOTSTRAP) \
 		$(PACKAGE_ACTION)
 
 package-manifest:
-	yes | $(EMACS_BATCH) $(PACKAGE_MANIFEST_BOOTSTRAP) \
+	yes | env CAT_PACKAGE_PROVISION=true $(EMACS_BATCH) $(PACKAGE_MANIFEST_BOOTSTRAP) \
 		$(PACKAGE_WRITE_MANIFEST)
 
 sync-package-manifest:

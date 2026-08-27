@@ -45,7 +45,11 @@ Cat Emacs is organized as a distribution core plus a user module list.
 Users can define their own module list in =~/.config/cat-emacs/cats=.
 If that file does not exist, Cat Emacs loads the default example from
 =templates/cats=.  The file contains one Lisp data list; it is read as data,
-not loaded as executable Emacs Lisp.
+not loaded as a program.  =:if= conditions inside that list are evaluated as
+trusted Emacs Lisp, so they may use loader flags such as =IS-MAC= and
+=EMACS29+=.  Duplicate modules in the same group and malformed options are
+rejected.  For a smaller editing-focused profile, copy =templates/cats-minimal=
+to =~/.config/cat-emacs/cats=.
 
 Other user-overridable configuration files follow the same rule: Cat Emacs
 first looks under =~/.config/cat-emacs/= and falls back to =templates/=.
@@ -93,7 +97,8 @@ directories under =modules/=:
 ** Default Module Profile
 
 The default profile in =templates/cats= enables a broad everyday
-setup:
+setup.  =templates/cats-minimal= keeps the shared core, UI, Meow, and the
+completion stack, and omits language, AI, Org, tools, and application modules.
 
 - UI: Doom themes/modeline, fonts, auto dark mode, window/workspace helpers,
   dashboard, and visual polish.
@@ -171,12 +176,16 @@ registered once for =prog-mode= is shared by all of its derived modes.
   selector is specified, Prosody derives the package's conventional major
   mode; see [[file:docs/font-typography-research.md][the font and typography notes]] for the model and fallback behavior.
 - =templates/cats= is the reference module list for new users.
+  =templates/cats-minimal= is the smaller editing-focused alternative.
 
 ** Package Synchronization
 
 The selected =cats= modules are the source of truth for managed packages.
-Run =make sync-packages= to install their ELPA and VC dependencies and remove
-packages that are no longer referenced.  The derived
+Ordinary Emacs startup records those declarations and does not install missing
+packages or refresh archives.  Run =make sync-packages= after cloning or
+changing modules; those targets set =CAT_PACKAGE_PROVISION= so module load can
+provision missing packages before =cat-package-sync= installs, upgrades, or
+removes to match the manifest.  The derived
 =package-selected-packages= and =package-vc-selected-packages= values remain
 in memory and are not written to =custom.el=.  Add or remove managed packages
 through =use-package= declarations in modules and enable those modules in the

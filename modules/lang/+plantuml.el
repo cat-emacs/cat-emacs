@@ -32,7 +32,11 @@
                         (make-temp-file "plantuml-" nil ".puml"
                                         (if (string-prefix-p "@start" string t) string
                                           (format "@startuml\n%s\n@enduml" string)))))
-           (data (string-trim (shell-command-to-string (format "%s -computeurl %s" plantuml-executable-path in-file))))
+           (data (with-temp-buffer
+                   (unless (eq 0 (call-process plantuml-executable-path nil t nil
+                                              "-computeurl" in-file))
+                     (error "Failed to compute URL"))
+                   (string-trim (buffer-string))))
            (url (concat plantuml-server-url "/" plantuml-output-type "/" data)))
       (when (string-empty-p data) (error "Failed to compute URL"))
       (kill-new url)

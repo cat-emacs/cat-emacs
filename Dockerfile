@@ -1,6 +1,7 @@
 # syntax = docker/dockerfile:1.2
 ARG EMACS_PLATFORM=linux/amd64
-FROM --platform=$EMACS_PLATFORM silex/emacs AS base
+ARG EMACS_VERSION=30.2
+FROM --platform=$EMACS_PLATFORM silex/emacs:${EMACS_VERSION} AS base
 ARG CI
 ENV CI=$CI
 

@@ -9,6 +9,10 @@ on:
     paths-ignore:
       - "README.org"
 
+  pull_request:
+    paths-ignore:
+      - "README.org"
+
   workflow_dispatch:
 
 concurrency:
@@ -20,7 +24,22 @@ permissions:
   packages: write
 
 jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Install Emacs
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends emacs-nox
+
+      - name: Lint
+        run: make lint
+
   docker:
+    needs: lint
     runs-on: ubuntu-latest
     steps:
       - name: Checkout

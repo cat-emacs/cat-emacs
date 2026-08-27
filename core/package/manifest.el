@@ -26,20 +26,19 @@ The value is one of `empty', `collecting', `ready', or `failed'.")
 (defvar cat-package--ensure-function #'use-package-ensure-elpa
   "Original function used by `cat-package--use-package-ensure'.")
 
-(defun cat-package--snapshot-font-rules ()
-  "Return a copy of Prosody rules when its registry is available."
-  (when (fboundp 'prosody-rules)
-    (prosody-rules)))
+(defun cat-package--env-flag (name)
+  "Return non-nil when environment variable NAME is an enabled flag."
+  (let ((value (getenv name)))
+    (and value
+         (not (string-empty-p value))
+         (not (member (downcase value) '("0" "false" "no" "off"))))))
 
-(defun cat-package--clear-font-rules ()
-  "Clear Prosody rules when its registry is available."
-  (when (fboundp 'prosody-clear-rules)
-    (prosody-clear-rules)))
-
-(defun cat-package--restore-font-rules (rules)
-  "Restore Prosody RULES when its registry is available."
-  (when (fboundp 'prosody-restore-rules)
-    (prosody-restore-rules rules)))
+(defvar cat-package-provision-missing
+  (cat-package--env-flag "CAT_PACKAGE_PROVISION")
+  "Non-nil to install missing managed packages while loading modules.
+Ordinary startups only record declarations.  Makefile package targets
+set `CAT_PACKAGE_PROVISION' so first-time provisioning can load modules
+before `cat-package-sync'.")
 
 (defun cat-package--reset-manifest ()
   "Clear package roots collected from Cat modules."
@@ -133,16 +132,18 @@ package.el refreshes it after installs and deletions, but not after
         (package-vc-install spec))))))
 
 (defun cat-package--use-package-ensure (name args state)
-  "Record use-package NAME with ensure ARGS, then call the package backend.
-STATE is the normalized use-package state."
+  "Record use-package NAME with ensure ARGS, then maybe install it.
+STATE is the normalized use-package state.  Installation runs only when
+`cat-package-provision-missing' is non-nil."
   (dolist (ensure args)
     (let ((package (if (eq ensure t) name ensure)))
       (when (consp package)
         (setq package (car package)))
       (cat-package--register-elpa package)))
-  (cat-package--without-persisting-selection
-   (lambda ()
-     (funcall cat-package--ensure-function name args state))))
+  (when cat-package-provision-missing
+    (cat-package--without-persisting-selection
+     (lambda ()
+       (funcall cat-package--ensure-function name args state)))))
 
 (defun cat-package--vc-spec (arg)
   "Convert normalized use-package VC ARG to a package-vc specification."
@@ -160,12 +161,15 @@ STATE is the normalized use-package state."
 
 (defun cat-package--use-package-vc-install-around
     (original arg &optional local-path)
-  "Record use-package VC ARG, then call ORIGINAL with LOCAL-PATH."
+  "Record use-package VC ARG, then maybe call ORIGINAL with LOCAL-PATH.
+Local checkouts always install.  Remote installs run only when
+`cat-package-provision-missing' is non-nil."
   (unless local-path
     (cat-package--register-vc (cat-package--vc-spec arg)))
-  (cat-package--without-persisting-selection
-   (lambda ()
-     (funcall original arg local-path))))
+  (when (or local-path cat-package-provision-missing)
+    (cat-package--without-persisting-selection
+     (lambda ()
+       (funcall original arg local-path)))))
 
 (defun cat-package--install-use-package-hooks ()
   "Install package manifest hooks for use-package."
@@ -229,14 +233,12 @@ nonlocal exit."
   (let ((previous-state cat-package-manifest-state)
         (previous-elpa-roots (copy-sequence cat-package--elpa-roots))
         (previous-vc-roots (copy-tree cat-package--vc-roots))
-        (previous-font-rules (cat-package--snapshot-font-rules))
         (previous-selection (copy-sequence package-selected-packages))
         (previous-vc-selection (copy-tree package-vc-selected-packages))
         succeeded
         result)
     (setq cat-package-manifest-state 'collecting)
     (cat-package--reset-manifest)
-    (cat-package--clear-font-rules)
     (unwind-protect
         (condition-case err
             (progn
@@ -254,8 +256,7 @@ nonlocal exit."
               cat-package--elpa-roots previous-elpa-roots
               cat-package--vc-roots previous-vc-roots
               package-selected-packages previous-selection
-              package-vc-selected-packages previous-vc-selection)
-        (cat-package--restore-font-rules previous-font-rules)))
+              package-vc-selected-packages previous-vc-selection)))
     (when succeeded
       (cat-package--refresh-quickstart))
     result))

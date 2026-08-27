@@ -4,8 +4,7 @@
 
 (use-package go-ts-mode
   :ensure nil
-  :when EMACS29+
-  :demand)
+  :when EMACS29+)
 
 (use-package ob-go
   :demand

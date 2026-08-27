@@ -1,25 +1,30 @@
 ;; -*- lexical-binding: t; -*-
 
+(defvar cat/org-latex-environment-configured-p nil
+  "Non-nil after TeX Live environment probing has been attempted.")
+
 (defun cat/org-latex-configure-texlive-environment ()
   "Connect Homebrew dvisvgm to the TeX Live kpathsea tree."
-  (when (and IS-MAC
-             (executable-find "dvisvgm")
-             (executable-find "kpsewhich"))
-    (unless (getenv "TEXMFROOT")
-      (when-let ((texmfroot
-                  (car (ignore-errors
-                         (process-lines "kpsewhich" "-var-value=TEXMFROOT")))))
-        (setenv "TEXMFROOT" texmfroot)))
-    (unless (getenv "TEXMFCNF")
-      (when-let ((texmfcnf
-                  (car (ignore-errors (process-lines "kpsewhich" "texmf.cnf")))))
-        (setenv "TEXMFCNF" (file-name-directory texmfcnf))))))
-
-(cat/org-latex-configure-texlive-environment)
+  (unless cat/org-latex-environment-configured-p
+    (setq cat/org-latex-environment-configured-p t)
+    (when (and IS-MAC
+               (executable-find "dvisvgm")
+               (executable-find "kpsewhich"))
+      (unless (getenv "TEXMFROOT")
+        (when-let ((texmfroot
+                    (car (ignore-errors
+                           (process-lines "kpsewhich" "-var-value=TEXMFROOT")))))
+          (setenv "TEXMFROOT" texmfroot)))
+      (unless (getenv "TEXMFCNF")
+        (when-let ((texmfcnf
+                    (car (ignore-errors (process-lines "kpsewhich" "texmf.cnf")))))
+          (setenv "TEXMFCNF" (file-name-directory texmfcnf)))))))
 
 (use-package org-latex-preview
   :ensure nil
-  :hook (org-mode . org-latex-preview-mode)
+  :hook
+  (org-mode . cat/org-latex-configure-texlive-environment)
+  (org-mode . org-latex-preview-mode)
   :custom
   (org-latex-preview-mode-display-live t)
   (org-latex-preview-mode-update-delay 0.25)
