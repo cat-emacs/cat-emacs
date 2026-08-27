@@ -130,8 +130,6 @@ file name is resolved from the user or fallback template directory by
   :config
   (chatgpt-shell-ollama-load-models :override t))
 
-;;; agent
-
 (use-package aidermacs
   :commands #'aidermacs-transient-menu
   :custom
@@ -155,32 +153,3 @@ file name is resolved from the user or fallback template directory by
   :after org
   :config
   (add-to-list 'org-babel-load-languages '(aider . t)))
-
-(use-package agent-shell
-  :delight
-  (agent-shell-ui-mode "")
-  (agent-shell-completion-mode "")
-  :bind
-  (:map agent-shell-ui-mode-map
-        ("C-c C-p" . agent-shell-ui-backward-block)
-        ("C-c C-n" . agent-shell-ui-forward-block))
-  :custom
-  (agent-shell-dot-subdir-function #'agent-shell--dot-subdir-in-cache)
-  :transient
-  (cat-agent-shell
-   (:description (+with-icon "nf-dev-terminal" nil " Agent Shell"))
-   ["Action"
-    ("s" "agent-shell" agent-shell)
-    ("n" "new shell" agent-shell-new-shell)])
-  (cat-vibe
-   ["Shell"
-    ("s" "agent-shell" cat-agent-shell)])
-  :config
-  (defun agent-shell--dot-subdir-in-cache (subdir)
-    "Return path to agent-shell/SUBDIR under the `cat-cache-dir'.
-
-For example:
-
-  (agent-shell--dot-subdir-in-cache \"screenshots\")
-  => \"/path/to/cat-cache-dir/agent-shell/project-dir/screenshots\""
-    (concat cat-cache-dir "agent-shell" (agent-shell-cwd) subdir)))
