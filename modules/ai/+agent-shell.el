@@ -43,7 +43,7 @@ per-kind icon from `cat-agent-shell-kind-icons'."
         ("C-c C-n" . agent-shell-ui-forward-block))
   :custom
   (agent-shell-dot-subdir-function #'agent-shell--dot-subdir-in-cache)
-  (agent-shell-preferred-agent-config 'pi)
+  (agent-shell-preferred-agent-config '(preselect . pi))
   (agent-shell-header-style 'text)
   (agent-shell-show-welcome-message nil)
   (agent-shell-thought-process-icon (+with-icon "nf-md-lightbulb_on_outline"))
