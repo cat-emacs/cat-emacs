@@ -10,6 +10,7 @@
         ("C-c C-n" . agent-shell-ui-forward-block))
   :custom
   (agent-shell-dot-subdir-function #'agent-shell--dot-subdir-in-cache)
+  (agent-shell-preferred-agent-config 'pi)
   :transient
   (cat-agent-shell
    (:description (+with-icon "nf-dev-terminal" nil " Agent Shell"))
