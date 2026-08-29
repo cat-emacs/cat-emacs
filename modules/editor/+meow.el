@@ -19,9 +19,9 @@
   :bind
   (:map meow-insert-state-keymap
         ([remap corfu-quit] . meow-insert-exit)
-        ([remap keyboard-quit] . meow-insert-exit)
-        ("<escape>" . ESC-prefix))
+        ([remap keyboard-quit] . meow-insert-exit))
   :config
+  (keymap-set meow-insert-state-keymap "<escape>" esc-map)
   (meow-leader-define-key
    '("1" . meow-digit-argument)
    '("2" . meow-digit-argument)
@@ -36,8 +36,8 @@
    '("/" . meow-keypad-describe-key)
    '("?" . meow-cheatsheet)
    '("u" . meow-universal-argument))
-  (meow-motion-overwrite-define-key
-   '("<escape>" . ESC-prefix))
+  (meow-motion-define-key
+   (cons "<escape>" esc-map))
   (meow-normal-define-key
    '("0" . meow-expand-0)
    '("9" . meow-expand-9)
@@ -108,7 +108,7 @@
    '("%" . meow-query-replace)
    '("C-%" . meow-query-replace-regexp)
    '("'" . repeat)
-   '("<escape>" . ESC-prefix)
+   (cons "<escape>" esc-map)
    (when (modulep! embark)
      '(">" . embark-act))
    (when (modulep! avy)

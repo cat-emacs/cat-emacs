@@ -22,7 +22,7 @@
   (defun beancount--fava-filter (_process output)
     "Open fava url as soon as the address is announced."
     (with-current-buffer "*fava*" (insert output))
-    (if-let ((url (string-match "Starting Fava on \\(http://.+:[0-9]+\\)" output)))
+    (if-let* ((url (string-match "Starting Fava on \\(http://.+:[0-9]+\\)" output)))
         (browse-url (match-string 1 output)))))
 
 (with-eval-after-load 'eglot

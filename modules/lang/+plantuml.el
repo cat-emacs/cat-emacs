@@ -17,7 +17,8 @@
   (plantuml-indent-level 2)
   :config
   (defun hex-encode (str)
-    (string-join (mapcar (lambda (c) (format "%02x" c)) (string-as-unibyte str))))
+    (string-join (mapcar (lambda (c) (format "%02x" c))
+                         (encode-coding-string str 'utf-8))))
 
   (defun plantuml-server-encode-url (string)
     "Encode the string STRING into a URL suitable for PlantUML server interactions."

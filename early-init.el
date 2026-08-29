@@ -41,8 +41,11 @@
        (let ((emacs-dir (getenv "emacs_dir")))
          (and emacs-dir (string-match-p "mingw64" emacs-dir)))))
 (defconst IS-WSL
-  (and (stringp operating-system-release)
-       (string-match-p "WSL2" operating-system-release)))
+  (and IS-LINUX
+       (file-readable-p "/proc/sys/kernel/osrelease")
+       (with-temp-buffer
+         (insert-file-contents "/proc/sys/kernel/osrelease")
+         (re-search-forward "microsoft\\|WSL" nil t))))
 (defconst IS-CI      (getenv "CI"))
 (defconst STIPPLE-COMPATIBLE-P
   (not (or (and IS-MACPLUS (not EMACS31+))

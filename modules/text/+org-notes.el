@@ -20,7 +20,7 @@
 (use-package org-noter
   :custom
   (org-noter-notes-window-location
-   (if (string= system-name "Yui.local")
+   (if (string= (system-name) "Yui.local")
        'vertical-split
      'horizontal-split))
   (org-noter-doc-split-fraction '(0.6 . 0.5))
@@ -64,7 +64,7 @@ user select one of them."
 (defun org-noter-citar-find-key-from-this-file (filename)
   (let (entry-alist)
     (maphash (lambda (key entry)
-               (when-let ((file (citar-get-value citar-file-variable entry)))
+               (when-let* ((file (citar-get-value citar-file-variable entry)))
                  (push (cons file key) entry-alist)))
              (citar-get-entries))
     (let ((key (alist-get filename entry-alist nil nil (lambda (s regexp)

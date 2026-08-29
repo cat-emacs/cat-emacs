@@ -11,12 +11,12 @@
                (executable-find "dvisvgm")
                (executable-find "kpsewhich"))
       (unless (getenv "TEXMFROOT")
-        (when-let ((texmfroot
+        (when-let* ((texmfroot
                     (car (ignore-errors
                            (process-lines "kpsewhich" "-var-value=TEXMFROOT")))))
           (setenv "TEXMFROOT" texmfroot)))
       (unless (getenv "TEXMFCNF")
-        (when-let ((texmfcnf
+        (when-let* ((texmfcnf
                     (car (ignore-errors (process-lines "kpsewhich" "texmf.cnf")))))
           (setenv "TEXMFCNF" (file-name-directory texmfcnf)))))))
 

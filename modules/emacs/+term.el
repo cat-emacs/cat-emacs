@@ -46,7 +46,7 @@
            (vterm-buffer-name (project-prefixed-buffer-name "vterm"))
            (vterm-buffer (get-buffer vterm-buffer-name)))
       (if (and vterm-buffer (not current-prefix-arg))
-          (pop-to-buffer vterm-buffer  (bound-and-true-p display-comint-buffer-action))
+          (pop-to-buffer vterm-buffer)
         (vterm))))
   :bind
   (:map vterm-mode-map
