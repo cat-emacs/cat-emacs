@@ -16,7 +16,7 @@
 (use-package ob-core
   :ensure nil
   :hook
-  (org-babel-after-execute . #'cat/org-redisplay-inline-images-in-babel-result-h))
+  (org-babel-after-execute . cat/org-redisplay-inline-images-in-babel-result-h))
 
 (use-package ob-lob
   :ensure nil
