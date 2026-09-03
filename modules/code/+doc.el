@@ -35,6 +35,9 @@ Intended for `eldoc-documentation-functions' (which see)."
   :when (or (daemonp)
             (display-graphic-p))
   :hook (eldoc-mode . eldoc-box-hover-at-point-mode)
+  :config
+  ;; A maximized child frame has zero text width during initial sizing on Emacs 31.
+  (add-to-list 'eldoc-box-frame-parameters '(fullscreen))
   :custom
   (eldoc-box-lighter nil)
   (eldoc-minor-mode-string
