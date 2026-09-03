@@ -14,6 +14,18 @@
   :config
   (pdf-loader-install :no-query))
 
+(use-package pdf-text
+  :cat text
+  :after pdf-tools
+  :vc (:url "https://github.com/agzam/pdf-text")
+  :bind
+  (:map pdf-view-mode-map
+        ("x" . pdf-view-as-text)
+   :map pdf-text-mode-map
+        ("RET" . pdf-text-show-in-pdf)
+        ("<return>" . pdf-text-show-in-pdf)
+        ("q" . bury-buffer)))
+
 (use-package org-pdftools
   :hook (org-mode . org-pdftools-setup-link)
   :custom

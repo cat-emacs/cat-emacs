@@ -142,6 +142,6 @@
  nov
  oj ;; :cat cli
  pass
- pdf
+ (pdf :cat text)
  toc
  undo)
