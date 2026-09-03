@@ -75,6 +75,13 @@ per-kind icon from `cat-agent-shell-kind-icons'."
   (defun cat/agent-shell--dot-subdir-in-cache (subdir)
     (concat cat-cache-dir "agent-shell" (agent-shell-cwd) subdir)))
 
+(use-package agent-shell-macext
+  :cat macext
+  :when IS-MAC
+  :after agent-shell
+  :vc (:url "https://github.com/cxa/agent-shell-macext")
+  :hook (agent-shell-mode . agent-shell-macext-setup))
+
 (use-package agent-shell-sidebar
   :cat sidebar
   :after agent-shell

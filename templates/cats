@@ -84,7 +84,7 @@
  :ai
  copilot
  vibe
- (agent-shell :cat (sidebar bookmark workspace manager))
+ (agent-shell :cat (sidebar bookmark workspace manager macext))
  ;; (mcp :cat server)
 
  :lang
