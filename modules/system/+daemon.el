@@ -23,7 +23,11 @@
     (when eldoc-box-hover-at-point-mode
       (eldoc-box-hover-at-point-mode 0)))
   (when IS-MACPORT
-    (setq mac-system-move-file-to-trash-use-finder (display-graphic-p)))
+    (setq mac-system-move-file-to-trash-use-finder (display-graphic-p))
+    (when (display-graphic-p)
+      (set-frame-parameter nil 'menu-bar-lines 1)))
+  (unless (or IS-ANDROID (display-graphic-p))
+    (set-frame-parameter nil 'menu-bar-lines 0))
   (cat-custom-reevaluate-settings)
   (cat-benchmark 'end "configuring new frame."))
 

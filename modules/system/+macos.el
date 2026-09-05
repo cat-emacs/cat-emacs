@@ -17,9 +17,12 @@
 
 (when IS-MACPORT
   (when (display-graphic-p)
-    (setq mac-system-move-file-to-trash-use-finder t))
-  ;; See Info node `(emacs) Mac Fullscreen' for more information.
-  (menu-bar-mode 1)
+    (setq mac-system-move-file-to-trash-use-finder t)
+    ;; See Info node `(emacs) Mac Fullscreen' for more information.
+    (set-frame-parameter nil 'menu-bar-lines 1))
+  ;; Per-frame so TUI clients do not inherit a menu bar.
+  (add-to-list 'window-system-default-frame-alist
+               '(mac . ((menu-bar-lines . 1))))
 
   ;; see https://github.com/railwaycat/homebrew-emacsmacport/issues/52
   (use-package mac-pseudo-daemon
