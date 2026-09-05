@@ -32,7 +32,7 @@ PACKAGE_ACTION ?= $(PACKAGE_SYNC)
 LISP_FILES ?= $(shell git -C "$(INIT_DIR)" ls-files '*.el')
 
 .PHONY: lint packages package-manifest sync-package-manifest sync-packages \
-	upgrade-packages sync-upgrade-packages compile-org
+	upgrade-packages sync-upgrade-packages recompile-packages compile-org
 
 lint:
 	$(EMACS) --batch --eval "(let ((failed 0)) (dolist (file command-line-args-left) (condition-case err (with-temp-buffer (insert-file-contents file) (emacs-lisp-mode) (check-parens)) (error (setq failed 1) (princ (format \"%s: %S\\n\" file err))))) (kill-emacs failed))" $(LISP_FILES)
@@ -58,6 +58,9 @@ upgrade-packages:
 
 sync-upgrade-packages:
 	$(MAKE) packages PACKAGE_ACTION='$(PACKAGE_SYNC_UPGRADE)'
+
+recompile-packages:
+	$(EMACS_BATCH) $(PACKAGE_INITIALIZE) --funcall package-recompile-all
 
 compile-org:
 	$(MAKE) -C "$(INIT_DIR)/elpa/org-mode" compile autoloads
