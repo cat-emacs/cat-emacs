@@ -48,6 +48,7 @@
                       '(conf-toml-mode  . toml-ts-mode)
                       '(js-mode         . js-ts-mode)
                       '(kotlin-mode     . kotlin-ts-mode)
+                      '(lua-mode        . lua-ts-mode)
                       '(ruby-mode       . ruby-ts-mode)
                       '(rust-mode       . rust-ts-mode)
                       '(sh-mode         . bash-ts-mode)
