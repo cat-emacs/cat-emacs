@@ -3,7 +3,7 @@
 (use-package android-mode
   :vc (:url "https://github.com/cat-emacs/android-mode")
   :delight (android-mode (:eval (+with-icon "nf-md-android" " ")))
-  :commands (android-root android-avd android-avd-start)
+  :commands android-root
   :init
   (defun cat/android-mode ()
     (when (android-root) (android-mode t)))
@@ -15,6 +15,7 @@
    ["Start"
     ("a" "start app" android-start-app)
     ("r" "run" android-run)
+    ("s" "screen mirror" android-scrcpy)
     ("v" "virtual devices" android-avd)]
    ["Build"
     ("c" "build" android-gradle-build)
