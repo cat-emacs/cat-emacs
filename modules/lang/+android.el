@@ -3,7 +3,7 @@
 (use-package android-mode
   :vc (:url "https://github.com/cat-emacs/android-mode")
   :delight (android-mode (:eval (+with-icon "nf-md-android" " ")))
-  :commands #'android-root
+  :commands (android-root android-avd android-avd-start)
   :init
   (defun cat/android-mode ()
     (when (android-root) (android-mode t)))
@@ -15,7 +15,7 @@
    ["Start"
     ("a" "start app" android-start-app)
     ("r" "run" android-run)
-    ("e" "emulator" android-start-emulator)]
+    ("v" "virtual devices" android-avd)]
    ["Build"
     ("c" "build" android-gradle-build)
     ("C" "clean" android-gradle-clean)
@@ -27,14 +27,11 @@
 
 (use-package compose-preview
   :vc (:url "https://github.com/cat-emacs/compose-preview")
+  :commands compose-preview
   :minor-transient
   (android-mode
    ["Compose"
-    ("p" "preview" compose-preview-refresh)
-    ("P" "open previews" compose-preview-open-results)
-    ("s" "record snapshots" compose-preview-record)
-    ("S" "verify snapshots" compose-preview-verify)
-    ("v" "set variant" compose-preview-set-variant)]))
+    ("p" "preview" compose-preview)]))
 
 (use-package elogcat
   :vc (:url "https://github.com/cat-emacs/elogcat.el")
