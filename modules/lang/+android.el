@@ -3,7 +3,6 @@
 (use-package android-mode
   :vc (:url "https://github.com/cat-emacs/android-mode")
   :delight (android-mode (:eval (+with-icon "nf-md-android" " ")))
-  :commands android-root
   :init
   (defun cat/android-mode ()
     (when (android-root) (android-mode t)))
