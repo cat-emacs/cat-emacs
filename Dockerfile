@@ -32,7 +32,8 @@ FROM base AS packages
 ARG PACKAGE_CACHE_EPOCH
 
 COPY early-init.el Makefile ./
-COPY core/package/archives.el core/package/manifest.el ./core/package/
+COPY core/package/archives.el core/package/autoloads.el \
+     core/package/manifest.el ./core/package/
 COPY --from=manifest /tmp/cat-emacs-package-manifest.eld /tmp/cat-emacs-package-manifest.eld
 
 RUN --mount=type=cache,id=emacs-packages,sharing=locked,target=/root/.config/emacs/elpa \

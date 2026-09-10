@@ -3,7 +3,12 @@
 (require 'cl-lib)
 (require 'package)
 (require 'seq)
-(require 'cat-package-autoloads)
+;; Package make targets load this file by path with a bare `load-path', so
+;; resolve the sibling library relative to this file.
+(require 'cat-package-autoloads
+         (expand-file-name "autoloads"
+                           (file-name-directory
+                            (or load-file-name buffer-file-name))))
 
 (defvar package-vc-selected-packages nil)
 (defvar use-package-ensure-function)
