@@ -8,6 +8,8 @@
     (cat-module . "module")
     ;; Package management depends on configuration and module queries.
     (cat-package-archives . "package/archives")
+    ;; Generated autoload and quickstart files back the manifest operations.
+    (cat-package-autoloads . "package/autoloads")
     (cat-package-manifest . "package/manifest")
     (cat-package-use-package . "package/use-package")
     (cat-package-vc-skip-unchanged . "package/vc-skip-unchanged")
@@ -39,6 +41,9 @@ The value is one of `new', `initializing', `ready', or `failed'.")
         (progn
           (dolist (library cat-core--libraries)
             (cat-core--require (car library) (cdr library)))
+          ;; Repair autoloads left behind by working trees updated outside
+          ;; `package-vc' before modules rely on their definitions.
+          (cat-package-regenerate-stale-autoloads)
           (cat-package-collect #'cat-load-modules)
           (setq cat-core-state 'ready
                 succeeded t))

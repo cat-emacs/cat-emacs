@@ -3,6 +3,7 @@
 (require 'cl-lib)
 (require 'package)
 (require 'seq)
+(require 'cat-package-autoloads)
 
 (defvar package-vc-selected-packages nil)
 (defvar use-package-ensure-function)
@@ -90,29 +91,6 @@ In-memory changes to package selection variables are preserved."
                      (cat-package--set-custom-value variable value)
                    (funcall save-variable variable value comment)))))
       (funcall function))))
-
-(defvar cat-package--quickstart-needs-refresh nil
-  "Non-nil when a deferred `package-quickstart-refresh' is pending.")
-
-(defun cat-package--without-quickstart-refresh (function)
-  "Call FUNCTION without regenerating `package-quickstart-file'.
-package.el rebuilds and byte-compiles that concatenated autoload file
-after every install or deletion.  Remember whether a refresh was
-requested so the caller can do it once."
-  (cl-letf (((symbol-function 'package--quickstart-maybe-refresh)
-             (lambda ()
-               (setq cat-package--quickstart-needs-refresh t))))
-    (funcall function)))
-
-(defun cat-package--refresh-quickstart (&optional force)
-  "Regenerate the quickstart file to match the installed packages.
-Refresh when FORCE is non-nil or a deferred refresh is pending.
-package.el refreshes it after installs and deletions, but not after
-`package-vc-upgrade-all', and the file must be created once initially."
-  (when (and (bound-and-true-p package-quickstart)
-             (or force cat-package--quickstart-needs-refresh))
-    (setq cat-package--quickstart-needs-refresh nil)
-    (package-quickstart-refresh)))
 
 (defun cat-package-install (package)
   "Install PACKAGE without persisting derived package selection."
@@ -368,6 +346,7 @@ The generated data is intended for build caching, not manual maintenance."
                 (package-vc-install-selected-packages))
               (let ((package-selected-packages package-roots))
                 (package-autoremove))))
+           (cat-package-regenerate-stale-autoloads t)
            (cat-package--refresh-quickstart t)))
       (setq package-selected-packages previous-selection
             package-vc-selected-packages previous-vc-selection))))
@@ -393,6 +372,7 @@ The generated data is intended for build caching, not manual maintenance."
                       package-alist)))
                 (package-upgrade-all nil))
               (package-vc-upgrade-all)))
+           (cat-package-regenerate-stale-autoloads t)
            (cat-package--refresh-quickstart t)))
       (setq package-selected-packages previous-selection
             package-vc-selected-packages previous-vc-selection))))
