@@ -32,8 +32,10 @@ FROM base AS packages
 ARG PACKAGE_CACHE_EPOCH
 
 COPY early-init.el Makefile ./
-COPY core/package/archives.el core/package/autoloads.el \
-     core/package/manifest.el ./core/package/
+# Copy the whole package-management directory: its files require each other,
+# and naming them individually breaks this stage whenever that set changes.
+# Wider copies would rebuild org-mode below for unrelated core edits.
+COPY core/package/ ./core/package/
 COPY --from=manifest /tmp/cat-emacs-package-manifest.eld /tmp/cat-emacs-package-manifest.eld
 
 RUN --mount=type=cache,id=emacs-packages,sharing=locked,target=/root/.config/emacs/elpa \
