@@ -42,25 +42,25 @@ can be enabled, replaced, or skipped from a user module list.
 ** How It Is Organized
 
 Cat Emacs is organized as a distribution core plus a user module list.
-Users can define their own module list in =~/.config/cat-emacs/cats=.
+Users can define their own module list in ~$HOME/.config/cat-emacs/cats~.
 If that file does not exist, Cat Emacs loads the default example from
-=templates/cats=.  The file contains one Lisp data list; it is read as data,
-not loaded as a program.  =:if= conditions inside that list are evaluated as
-trusted Emacs Lisp, so they may use loader flags such as =IS-MAC= and
-=EMACS29+=.  Duplicate modules in the same group and malformed options are
-rejected.  For a smaller editing-focused profile, copy =templates/cats-minimal=
-to =~/.config/cat-emacs/cats=.
+~templates/cats~.  The file contains one Lisp data list; it is read as data,
+not loaded as a program.  ~:if~ conditions inside that list are evaluated as
+trusted Emacs Lisp, so they may use loader flags such as ~IS-MAC~ and
+~EMACS29+~.  Duplicate modules in the same group and malformed options are
+rejected.  For a smaller editing-focused profile, copy ~templates/cats-minimal~
+to ~$HOME/.config/cat-emacs/cats~.
 
 Other user-overridable configuration files follow the same rule: Cat Emacs
-first looks under =~/.config/cat-emacs/= and falls back to =templates/=.
+first looks under ~$HOME/.config/cat-emacs/~ and falls back to ~templates/~.
 For example:
 
-- =~/.config/cat-emacs/lsp-proxy/languages.toml= falls back to =templates/lsp-proxy/languages.toml=.
-- =~/.config/cat-emacs/mermaid/config.json= falls back to =templates/mermaid/config.json=.
-- =~/.config/cat-emacs/prompt/= falls back to =templates/prompt/=.
+- ~$HOME/.config/cat-emacs/lsp-proxy/languages.toml~ falls back to ~templates/lsp-proxy/languages.toml~.
+- ~$HOME/.config/cat-emacs/mermaid/config.json~ falls back to ~templates/mermaid/config.json~.
+- ~$HOME/.config/cat-emacs/prompt/~ falls back to ~templates/prompt/~.
 
 Machine- and account-specific settings belong in
-=~/.config/cat-emacs/custom.el=.  For example:
+~$HOME/.config/cat-emacs/custom.el~.  For example:
 
 #+begin_src emacs-lisp
 (custom-set-variables
@@ -74,30 +74,30 @@ Machine- and account-specific settings belong in
 #+end_src
 
 The prompt file in this example lives at
-=~/.config/cat-emacs/prompt/merge-request.yml.j2=.
+~$HOME/.config/cat-emacs/prompt/merge-request.yml.j2~.
 
-Bootstrap files live under =core/=.  Optional module groups map directly to
-directories under =modules/=:
+Bootstrap files live under ~core/~.  Optional module groups map directly to
+directories under ~modules/~:
 
-| Group       | Purpose                                                                                     |
-|-------------+---------------------------------------------------------------------------------------------|
-| =:base=       | Package setup, benchmarking, defaults, environment helpers, local settings, and keymaps.    |
-| =:system=     | OS and session integration such as daemon and macOS support.                                |
-| =:emacs=      | Enhancements for built-in features such as Dired, TRAMP, EUDC, terminal, and file handling. |
-| =:ui=         | Themes, fonts, appearance, windows, workspaces, and dashboard.                              |
-| =:editor=     | Modal editing, jumping, structural editing, hydras, and input methods.                      |
-| =:completion= | Completion, minibuffer UI, narrowing, actions, and snippets.                                |
-| =:text=       | Org, LaTeX, Markdown, bibliography, publishing, notes, and learning workflows.              |
-| =:code=       | Formatting, diagnostics, Tree-sitter, documentation, sideline, and LSP clients.             |
-| =:ai=         | AI-assisted coding, chat, agents, model metadata, and MCP integration.                      |
-| =:lang=       | Programming languages, markup/data formats, build files, diagrams, and CSV.                 |
-| =:tools=      | Search, Git, containers, compile commands, and infrastructure helpers.                      |
-| =:apps=       | Mail, feeds, maps, media, password store, PDF, GitHub, issue trackers, and user workflows.  |
+| Group         | Purpose                                                                                     |
+|---------------+---------------------------------------------------------------------------------------------|
+| ~:base~       | Package setup, benchmarking, defaults, environment helpers, local settings, and keymaps.    |
+| ~:system~     | OS and session integration such as daemon and macOS support.                                |
+| ~:emacs~      | Enhancements for built-in features such as Dired, TRAMP, EUDC, terminal, and file handling. |
+| ~:ui~         | Themes, fonts, appearance, windows, workspaces, and dashboard.                              |
+| ~:editor~     | Modal editing, jumping, structural editing, hydras, and input methods.                      |
+| ~:completion~ | Completion, minibuffer UI, narrowing, actions, and snippets.                                |
+| ~:text~       | Org, LaTeX, Markdown, bibliography, publishing, notes, and learning workflows.              |
+| ~:code~       | Formatting, diagnostics, Tree-sitter, documentation, sideline, and LSP clients.             |
+| ~:ai~         | AI-assisted coding, chat, agents, model metadata, and MCP integration.                      |
+| ~:lang~       | Programming languages, markup/data formats, build files, diagrams, and CSV.                 |
+| ~:tools~      | Search, Git, containers, compile commands, and infrastructure helpers.                      |
+| ~:apps~       | Mail, feeds, maps, media, password store, PDF, GitHub, issue trackers, and user workflows.  |
 
 ** Default Module Profile
 
-The default profile in =templates/cats= enables a broad everyday
-setup.  =templates/cats-minimal= keeps the shared core, UI, Meow, and the
+The default profile in ~templates/cats~ enables a broad everyday
+setup.  ~templates/cats-minimal~ keeps the shared core, UI, Meow, and the
 completion stack, and omits language, AI, Org, tools, and application modules.
 
 - UI: Doom themes/modeline, fonts, auto dark mode, window/workspace helpers,
@@ -112,8 +112,8 @@ completion stack, and omits language, AI, Org, tools, and application modules.
 - Tools and apps: Ripgrep, Magit, Docker, compile helpers, Beancount, Elfeed,
   GitHub, mail, password-store, PDFs, media, maps, blogs, and more.
 
-Modules can also expose feature-level controls through =use-package='s =:cat=
-keyword and =catp!=.  Package declarations guarded by =:cat= are optional and
+Modules can also expose feature-level controls through ~use-package~'s ~:cat~
+keyword and ~catp!~.  Package declarations guarded by ~:cat~ are optional and
 stay disabled unless the Cat feature or expression is enabled:
 
 #+begin_src emacs-lisp
@@ -129,10 +129,10 @@ stay disabled unless the Cat feature or expression is enabled:
 ** Transient Menus
 
 The =cat-emacs/mode-transient= package composes native Transient group and
-suffix specifications across =use-package= declarations.  Use =:transient= for
-a named menu, =:major-transient= for a major-mode menu, and
-=:minor-transient= for a minor-mode menu.  Cat Emacs keeps global =C-c=
-bindings in =modules/base/+keymap.el= instead of package declarations.
+suffix specifications across ~use-package~ declarations.  Use ~:transient~ for
+a named menu, ~:major-transient~ for a major-mode menu, and
+~:minor-transient~ for a minor-mode menu.  Cat Emacs keeps global ~C-c~
+bindings in ~modules/base/+keymap.el~ instead of package declarations.
 
 #+begin_src emacs-lisp
 (use-package android-mode
@@ -143,53 +143,53 @@ bindings in =modules/base/+keymap.el= instead of package declarations.
     ("t" "Test" android-gradle-test)]))
 #+end_src
 
-The group vectors use Transient's native syntax.  Prefix =:description= values
-that are forms are made dynamic automatically, without an explicit =lambda=.
-Use =C-c n= for the current major-mode menu and =C-c N= for active registered
+The group vectors use Transient's native syntax.  Prefix ~:description~ values
+that are forms are made dynamic automatically, without an explicit ~lambda~.
+Use ~C-c n~ for the current major-mode menu and ~C-c N~ for active registered
 minor modes.  Mode-transient menu buffers hide the cursor by default so it does
 not cover a major-mode title icon.  Minor-mode menu titles use the mode lighter
-by default; use =(:title "Title")= in a mode declaration to override its title.
+by default; use ~(:title "Title")~ in a mode declaration to override its title.
 Major-mode menus inherit every registered parent-mode menu, so a contribution
-registered once for =prog-mode= is shared by all of its derived modes.
+registered once for ~prog-mode~ is shared by all of its derived modes.
 
 ** Configuration Entry Points
 
-- =early-init.el= defines platform flags, cache directories, benchmark logging,
+- ~early-init.el~ defines platform flags, cache directories, benchmark logging,
   and OS modifier keys.
-- =init.el= adds local elisp to =load-path= and calls =cat-core-initialize=.
-- =core/core.el= is the core entry point.  It explicitly loads configuration,
+- ~init.el~ adds local elisp to ~load-path~ and calls ~cat-core-initialize~.
+- ~core/core.el~ is the core entry point.  It explicitly loads configuration,
   module declarations, package management, and utilities in dependency order,
   then collects packages while loading the selected modules.
-- =core/package/= contains package management implementations loaded explicitly
+- ~core/package/~ contains package management implementations loaded explicitly
   by the core entry point: archive configuration, package-root collection, the
-  =use-package= =:cat= keyword, and
+  ~use-package~ ~:cat~ keyword, and
   [[https://github.com/cat-emacs/package-vc-skip-unchanged][package-vc-skip-unchanged]].
-- =modules/base/+package.el= configures package archives, mirrors,
-  =use-package= defaults, =package-vc=, and package tools.
-- =core/module.el= defines the optional module loader.
-- =modules/base/+keymap.el= defines the main =C-c= command map for files,
+- ~modules/base/+package.el~ configures package archives, mirrors,
+  ~use-package~ defaults, ~package-vc~, and package tools.
+- ~core/module.el~ defines the optional module loader.
+- ~modules/base/+keymap.el~ defines the main ~C-c~ command map for files,
   toggles, Org, plugins, workspaces, search, and AI tools.
-- =modules/ui/+font.el= configures and integrates
+- ~modules/ui/+font.el~ configures and integrates
   [[https://github.com/cat-emacs/prosody][Prosody]], which maps modes and faces to semantic font roles backed by
-  script-aware fontsets.  Its =:font-rule= keyword registers mode- or
-  buffer-name-based rules for modules loaded after =:ui font=.  When neither
+  script-aware fontsets.  Its ~:font-rule~ keyword registers mode- or
+  buffer-name-based rules for modules loaded after ~:ui font~.  When neither
   selector is specified, Prosody derives the package's conventional major
   mode; see [[file:docs/font-typography-research.md][the font and typography notes]] for the model and fallback behavior.
-- =templates/cats= is the reference module list for new users.
-  =templates/cats-minimal= is the smaller editing-focused alternative.
+- ~templates/cats~ is the reference module list for new users.
+  ~templates/cats-minimal~ is the smaller editing-focused alternative.
 
 ** Package Synchronization
 
-The selected =cats= modules are the source of truth for managed packages.
+The selected ~cats~ modules are the source of truth for managed packages.
 Ordinary Emacs startup records those declarations and does not install missing
-packages or refresh archives.  Run =make sync-packages= after cloning or
-changing modules; those targets set =CAT_PACKAGE_PROVISION= so module load can
-provision missing packages before =cat-package-sync= installs, upgrades, or
+packages or refresh archives.  Run ~make sync-packages~ after cloning or
+changing modules; those targets set ~CAT_PACKAGE_PROVISION~ so module load can
+provision missing packages before ~cat-package-sync~ installs, upgrades, or
 removes to match the manifest.  The derived
-=package-selected-packages= and =package-vc-selected-packages= values remain
-in memory and are not written to =custom.el=.  Add or remove managed packages
-through =use-package= declarations in modules and enable those modules in the
-=cats= file; there is no separate package list to maintain.
+~package-selected-packages~ and ~package-vc-selected-packages~ values remain
+in memory and are not written to ~custom.el~.  Add or remove managed packages
+through ~use-package~ declarations in modules and enable those modules in the
+~cats~ file; there is no separate package list to maintain.
 
 *** Make Targets
 
@@ -220,8 +220,8 @@ prompts are answered non-interactively.
 
 ** Docker
 
-The Docker build derives a temporary package manifest from =templates/cats=
-and the modules' =use-package= declarations.  The package layer depends on
+The Docker build derives a temporary package manifest from ~templates/cats~
+and the modules' ~use-package~ declarations.  The package layer depends on
 that generated manifest and the package core, so configuration-only changes
 reuse the installed-package layer.  ELPA and native-compilation cache mounts
 are copied into the final image rather than treated as image contents
@@ -262,8 +262,8 @@ Create a shortcut with:
 C:\msys64\usr\bin\mintty.exe -w hide /bin/env MSYSTEM=MINGW64 MSYS2_PATH_TYPE=inherit /bin/zsh -l -c "/mingw64/bin/emacsclientw -n -c -a ''"
 #+end_src
 
-You may also set the =HOME= environment variable and the shortcut start path to
-=%USERPROFILE%=.
+You may also set the ~HOME~ environment variable and the shortcut start path to
+~%USERPROFILE%~.
 
 **** WSL
 To use Wayland and sync GTK theme preference with Windows:
@@ -289,14 +289,14 @@ For user data sync, see
 *** Pass
 See [[https://www.masteringemacs.org/article/keeping-secrets-in-emacs-gnupg-auth-sources][Keeping Secrets in Emacs with GnuPG and Auth Sources]].
 
-Add this to =~/.gnupg/gpg-agent.conf=:
+Add this to ~$HOME/.gnupg/gpg-agent.conf~:
 
 #+begin_example
 allow-emacs-pinentry
 #+end_example
 
 *** Mu4e
-With some recent Homebrew builds, =mu4e-dbus.el= may be missing. Download and
+With some recent Homebrew builds, ~mu4e-dbus.el~ may be missing. Download and
 compile it manually when needed:
 
 #+begin_src sh :results silent
@@ -310,8 +310,8 @@ wget https://github.com/djcb/mu/raw/master/mu4e/mu4e-dbus.el -O /opt/homebrew/sh
 *** LaTeX
 To include SVG files in LaTeX export and generate PDFs:
 
-- Add =set_tex_cmds( '--shell-escape %O %S' );= to =~/.latexmkrc=.
-- Install =inkscape=.
+- Add ~set_tex_cmds( '--shell-escape %O %S' );~ to ~$HOME/.latexmkrc~.
+- Install ~inkscape~.
 
 To indent TeX files:
 
