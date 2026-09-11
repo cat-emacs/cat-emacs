@@ -191,6 +191,33 @@ in memory and are not written to =custom.el=.  Add or remove managed packages
 through =use-package= declarations in modules and enable those modules in the
 =cats= file; there is no separate package list to maintain.
 
+*** Make Targets
+
+Most targets load the modules, because their ~use-package~ declarations are
+the only place managed packages are declared.  The manifest targets split that
+in two: one writes the collected declarations to a file, the other reads them
+back without loading any module.  The Docker build relies on the split so the
+layer that installs packages does not need the whole configuration.
+
+| Target                  | Purpose                                                         | Effect              |
+|-------------------------+-----------------------------------------------------------------+---------------------|
+| ~lint~                  | ~check-parens~ over tracked Lisp files, then ~git diff --check~ | none                |
+| ~sync-packages~         | Install declared packages and remove undeclared ones            | installs, *removes* |
+| ~upgrade-packages~      | Upgrade installed packages, both ELPA and VC                    | downloads           |
+| ~sync-upgrade-packages~ | ~sync-packages~ then ~upgrade-packages~                         | installs, *removes* |
+| ~package-manifest~      | Write collected declarations to ~PACKAGE_MANIFEST~              | writes one file     |
+| ~sync-package-manifest~ | Sync from the manifest without loading modules                  | installs, *removes* |
+| ~packages~              | Base for the above; ~PACKAGE_ACTION~ selects the operation      | depends on action   |
+| ~recompile-packages~    | ~package-recompile-all~ over installed packages                 | rewrites ~.elc~     |
+| ~compile-org~           | Build Org from source in ~elpa/org-mode~                        | rewrites that tree  |
+
+The targets marked *removes* end in ~package-autoremove~, which deletes packages
+no longer declared by any enabled module.
+
+Every target runs with ~CI=true~ unless overridden, which is why batch runs
+report CI at startup, and package operations are piped through ~yes~ so
+prompts are answered non-interactively.
+
 ** Docker
 
 The Docker build derives a temporary package manifest from =templates/cats=
