@@ -46,7 +46,12 @@ package-manifest:
 	yes | env CAT_PACKAGE_PROVISION=true $(EMACS_BATCH) $(PACKAGE_MANIFEST_BOOTSTRAP) \
 		$(PACKAGE_WRITE_MANIFEST)
 
-sync-package-manifest:
+# The image build generates the manifest in an earlier stage and copies it in;
+# a direct run has to produce it first.
+$(PACKAGE_MANIFEST):
+	$(MAKE) package-manifest
+
+sync-package-manifest: $(PACKAGE_MANIFEST)
 	yes | $(EMACS_BATCH) $(PACKAGE_GENERATED_BOOTSTRAP) \
 		$(PACKAGE_SYNC)
 
