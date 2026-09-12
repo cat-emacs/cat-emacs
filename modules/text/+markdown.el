@@ -15,6 +15,43 @@
 
 (use-package mustache)
 
+;; `md-mode' claims ".md" through its own autoload, so it must be declared
+;; before `markdown-mode' for the more specific README rule below to win.
+(use-package md-mode
+  :cat
+  :vc (:url "https://github.com/yibie/md-mode")
+  :font-rule (prose
+              :faces ((md-mode-callout decorative)
+                      (md-mode-markup code :height 0.9)
+                      (md-render-blockquote decorative)
+                      (md-render-callout-title prose :weight semi-bold)
+                      (md-render-header-* heading
+                                          :height 1.6
+                                          :height-step -0.075
+                                          :weight bold
+                                          :weight-step -0.5)
+                      (md-render-inline-code code)
+                      (md-render-link prose :weight semi-bold)
+                      (md-render-source-block code)
+                      (md-render-source-block-language code :height 0.9)
+                      (md-render-table-* table)))
+  :mode ("\\.md\\'" . md-mode)
+  :custom
+  ;; Prosody owns the heading scale through the font rule above; md-mode's own
+  ;; absolute face heights would compound with it.
+  (md-mode-heading-scaling-values '(1.0 1.0 1.0 1.0 1.0 1.0))
+  (md-mode-fold-front-matter-on-open t)
+  ;; `mmdr' does not accept the --backgroundColor and --scale flags md-render
+  ;; passes to the Mermaid CLI.
+  (md-render-mermaid-enabled nil)
+  (md-render-cache-directory (expand-file-name "md-render/" cat-cache-dir))
+  :major-transient
+  (md-mode
+   (:description (+with-icon "nf-cod-markdown" nil " Markdown"))
+   ["Mode"
+    ("v" "rendered view" md-mode-toggle-markup)
+    ("t" "toc" md-mode-toggle-toc :transient t)]))
+
 (use-package markdown-mode
   :font-rule (prose
              :faces ((markdown-blockquote-face decorative)
