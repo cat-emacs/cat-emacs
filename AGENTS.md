@@ -125,10 +125,17 @@ For Emacs Lisp edits:
 
 1. Run `check-parens` on modified Lisp files.
 2. Run `git diff --check`.
-3. Perform a non-CI batch startup with `--debug-init`.
-4. For core, module, package, or Docker changes, also perform a batch startup
-   with `CI=true` and an empty temporary `XDG_CONFIG_HOME` so it uses
+3. Perform a non-CI batch startup with `--debug-init`, explicitly loading
+   `init.el` after setting the init directory:
+   `emacs --batch --debug-init --init-directory "$PWD" -l "$PWD/init.el"`.
+4. For core, module, package, or Docker changes, run the same command with
+   `CI=true` and an empty temporary `XDG_CONFIG_HOME` so it uses
    `templates/cats`.
+
+`--batch` does not load the init file automatically, and `--init-directory`
+only selects its directory. A batch command without `-l init.el` can therefore
+exit successfully without testing this configuration. Put behavioral
+`--eval` assertions after `-l init.el` so they run against initialized state.
 
 For package-management changes, also verify:
 

@@ -34,6 +34,7 @@
        :ignored-files ("blame-reveal-focus.el"))
   :commands (blame-reveal-mode blame-reveal-global-mode)
   :config
+  (keymap-unset blame-reveal-mode-map "C-c C-l")
   (require 'blame-reveal-recursive)
   (require 'blame-reveal-focus)
   (require 'blame-reveal-transient)
@@ -41,4 +42,5 @@
   (cat-git-misc
    ["Blame Reveal"
     ("b" "toggle buffer" blame-reveal-mode)
-    ("B" "toggle globally" blame-reveal-global-mode)]))
+    ("B" "toggle globally" blame-reveal-global-mode)
+    ("m" "menu" blame-reveal-menu)]))
