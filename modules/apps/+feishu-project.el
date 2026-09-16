@@ -3,8 +3,8 @@
 (use-package mcp
   :if EMACS30+
   :defer t
-  :vc (:url "https://github.com/lizqwerscott/mcp.el"
-             :rev "2d172809cbdb2a40d86b28ad73bd65547cefe0e1"))
+  :vc (:url "https://github.com/cat-emacs/mcp.el"
+             :rev "0f18e48fd47793e326f25d70ca0fc79fce2f69a6"))
 
 (use-package feishu-project
   :vc (:url "https://github.com/cat-emacs/feishu-project.el")
