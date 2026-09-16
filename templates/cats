@@ -126,6 +126,7 @@
  :apps
  ;; (atlassian :cat confluence)
  ;; org-jira
+ feishu-project
  beancount
  blog
  chezmoi
