@@ -4,7 +4,7 @@
   :if EMACS30+
   :defer t
   :vc (:url "https://github.com/cat-emacs/mcp.el"
-             :rev "0f18e48fd47793e326f25d70ca0fc79fce2f69a6"))
+            :branch "feat/oauth-client"))
 
 (use-package feishu-project
   :vc (:url "https://github.com/cat-emacs/feishu-project.el")
