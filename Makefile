@@ -31,41 +31,42 @@ PACKAGE_SYNC_UPGRADE = $(PACKAGE_SYNC) $(PACKAGE_UPGRADE)
 PACKAGE_ACTION ?= $(PACKAGE_SYNC)
 LISP_FILES ?= $(shell git -C "$(INIT_DIR)" ls-files '*.el')
 
-.PHONY: lint packages package-manifest sync-package-manifest sync-packages \
-	upgrade-packages sync-upgrade-packages recompile-packages compile-org
+.PHONY: lint _package-action package-sync package-upgrade \
+	package-sync-upgrade package-manifest-write package-manifest-sync \
+	package-recompile org-compile
 
 lint:
 	$(EMACS) --batch --eval "(let ((failed 0)) (dolist (file command-line-args-left) (condition-case err (with-temp-buffer (insert-file-contents file) (emacs-lisp-mode) (check-parens)) (error (setq failed 1) (princ (format \"%s: %S\\n\" file err))))) (kill-emacs failed))" $(LISP_FILES)
 	git -C "$(INIT_DIR)" diff --check
 
-packages:
+_package-action:
 	yes | env CAT_PACKAGE_PROVISION=true $(EMACS_BATCH) $(PACKAGE_BOOTSTRAP) \
 		$(PACKAGE_ACTION)
 
-package-manifest:
+package-manifest-write:
 	yes | env CAT_PACKAGE_PROVISION=true $(EMACS_BATCH) $(PACKAGE_MANIFEST_BOOTSTRAP) \
 		$(PACKAGE_WRITE_MANIFEST)
 
 # The image build generates the manifest in an earlier stage and copies it in;
 # a direct run has to produce it first.
 $(PACKAGE_MANIFEST):
-	$(MAKE) package-manifest
+	$(MAKE) package-manifest-write
 
-sync-package-manifest: $(PACKAGE_MANIFEST)
+package-manifest-sync: $(PACKAGE_MANIFEST)
 	yes | $(EMACS_BATCH) $(PACKAGE_GENERATED_BOOTSTRAP) \
 		$(PACKAGE_SYNC)
 
-sync-packages:
-	$(MAKE) packages PACKAGE_ACTION='$(PACKAGE_SYNC)'
+package-sync:
+	$(MAKE) _package-action PACKAGE_ACTION='$(PACKAGE_SYNC)'
 
-upgrade-packages:
-	$(MAKE) packages PACKAGE_ACTION='$(PACKAGE_UPGRADE)'
+package-upgrade:
+	$(MAKE) _package-action PACKAGE_ACTION='$(PACKAGE_UPGRADE)'
 
-sync-upgrade-packages:
-	$(MAKE) packages PACKAGE_ACTION='$(PACKAGE_SYNC_UPGRADE)'
+package-sync-upgrade:
+	$(MAKE) _package-action PACKAGE_ACTION='$(PACKAGE_SYNC_UPGRADE)'
 
-recompile-packages:
+package-recompile:
 	$(EMACS_BATCH) $(PACKAGE_INITIALIZE) --funcall package-recompile-all
 
-compile-org:
+org-compile:
 	$(MAKE) -C "$(INIT_DIR)/elpa/org-mode" compile autoloads

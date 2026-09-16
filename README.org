@@ -182,8 +182,8 @@ registered once for ~prog-mode~ is shared by all of its derived modes.
 
 The selected ~cats~ modules are the source of truth for managed packages.
 Ordinary Emacs startup records those declarations and does not install missing
-packages or refresh archives.  Run ~make sync-packages~ after cloning or
-changing modules; those targets set ~CAT_PACKAGE_PROVISION~ so module load can
+packages or refresh archives.  Run ~make package-sync~ after cloning or
+changing modules; the target sets ~CAT_PACKAGE_PROVISION~ so module load can
 provision missing packages before ~cat-package-sync~ installs, upgrades, or
 removes to match the manifest.  The derived
 ~package-selected-packages~ and ~package-vc-selected-packages~ values remain
@@ -199,17 +199,16 @@ in two: one writes the collected declarations to a file, the other reads them
 back without loading any module.  The Docker build relies on the split so the
 layer that installs packages does not need the whole configuration.
 
-| Target                  | Purpose                                                         | Effect              |
-|-------------------------+-----------------------------------------------------------------+---------------------|
-| ~lint~                  | ~check-parens~ over tracked Lisp files, then ~git diff --check~ | none                |
-| ~sync-packages~         | Install declared packages and remove undeclared ones            | installs, *removes* |
-| ~upgrade-packages~      | Upgrade installed packages, both ELPA and VC                    | downloads           |
-| ~sync-upgrade-packages~ | ~sync-packages~ then ~upgrade-packages~                         | installs, *removes* |
-| ~package-manifest~      | Write collected declarations to ~PACKAGE_MANIFEST~              | writes one file     |
-| ~sync-package-manifest~ | Sync from the manifest without loading modules                  | installs, *removes* |
-| ~packages~              | Base for the above; ~PACKAGE_ACTION~ selects the operation      | depends on action   |
-| ~recompile-packages~    | ~package-recompile-all~ over installed packages                 | rewrites ~.elc~     |
-| ~compile-org~           | Build Org from source in ~elpa/org-mode~                        | rewrites that tree  |
+| Target                   | Purpose                                                         | Effect              |
+|--------------------------+-----------------------------------------------------------------+---------------------|
+| ~lint~                   | ~check-parens~ over tracked Lisp files, then ~git diff --check~ | none                |
+| ~package-sync~           | Install declared packages and remove undeclared ones            | installs, *removes* |
+| ~package-upgrade~        | Upgrade installed packages, both ELPA and VC                    | downloads           |
+| ~package-sync-upgrade~   | ~package-sync~ then ~package-upgrade~                           | installs, *removes* |
+| ~package-manifest-write~ | Write collected declarations to ~PACKAGE_MANIFEST~              | writes one file     |
+| ~package-manifest-sync~  | Sync from the manifest without loading modules                  | installs, *removes* |
+| ~package-recompile~      | ~package-recompile-all~ over installed packages                 | rewrites ~.elc~     |
+| ~org-compile~            | Build Org from source in ~elpa/org-mode~                        | rewrites that tree  |
 
 The targets marked *removes* end in ~package-autoremove~, which deletes packages
 no longer declared by any enabled module.

@@ -25,7 +25,7 @@ COPY . .
 RUN --mount=type=cache,id=emacs-packages,sharing=locked,target=/root/.config/emacs/elpa \
     --mount=type=cache,id=emacs-eln-cache,sharing=locked,target=/root/.config/emacs/eln-cache \
     XDG_CONFIG_HOME=/tmp/cat-emacs-config \
-    make package-manifest \
+    make package-manifest-write \
     PACKAGE_MANIFEST=/tmp/cat-emacs-package-manifest.eld
 
 FROM base AS packages
@@ -41,9 +41,9 @@ COPY --from=manifest /tmp/cat-emacs-package-manifest.eld /tmp/cat-emacs-package-
 RUN --mount=type=cache,id=emacs-packages,sharing=locked,target=/root/.config/emacs/elpa \
     --mount=type=cache,id=emacs-eln-cache,sharing=locked,target=/root/.config/emacs/eln-cache \
     echo "Package cache epoch: ${PACKAGE_CACHE_EPOCH:-manual}" && \
-    make sync-package-manifest \
+    make package-manifest-sync \
       PACKAGE_MANIFEST=/tmp/cat-emacs-package-manifest.eld && \
-    make compile-org && \
+    make org-compile && \
     mkdir -p /opt/cat-emacs && \
     cp -a elpa /opt/cat-emacs/elpa && \
     cp -a eln-cache /opt/cat-emacs/eln-cache
