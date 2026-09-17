@@ -28,6 +28,9 @@
 (use-package compose-preview
   :vc (:url "https://github.com/cat-emacs/compose-preview")
   :commands compose-preview
+  :custom
+  (compose-preview-cache-directory
+   (file-name-as-directory (expand-file-name "compose-preview" cat-cache-dir)))
   :minor-transient
   (android-mode
    ["Compose"
