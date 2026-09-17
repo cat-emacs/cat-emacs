@@ -11,7 +11,7 @@
 (use-package feishu-project
   :vc (:url "https://github.com/cat-emacs/feishu-project.el")
   :custom
-  (feishu-project-backend (if EMACS30+ 'mcp 'openapi)))
+  (feishu-project-backend 'cli))
 
 (provide '+feishu-project)
 ;;; +feishu-project.el ends here
