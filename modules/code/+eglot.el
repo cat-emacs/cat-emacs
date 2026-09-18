@@ -53,11 +53,6 @@
   :delight (lsp-proxy-mode (:eval (+with-icon "nf-md-rocket" " ")))
   :custom
   (lsp-proxy-user-languages-config (cat-config-file "lsp-proxy/languages.toml"))
-  :commands
-  (lsp-proxy-mode
-   lsp-proxy-enable-project
-   lsp-proxy-disable-project
-   lsp-proxy-open-config-file)
   :transient
   (cat-lsp-proxy
    (:description (+with-icon "nf-md-rocket" nil " LSP Proxy"))
