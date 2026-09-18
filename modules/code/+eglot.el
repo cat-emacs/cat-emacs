@@ -48,23 +48,22 @@
         '("kotlin-lsp" "--stdio")))
 
 (use-package lsp-proxy
-  :vc (:url "https://github.com/jadestrong/lsp-proxy")
+  :vc (:url "https://github.com/cat-emacs/lsp-proxy")
   :delight (lsp-proxy-mode (:eval (+with-icon "nf-md-rocket" " ")))
   :custom
   (lsp-proxy-user-languages-config (cat-config-file "lsp-proxy/languages.toml"))
-  :hook
-  ((
-    beancount-mode
-    )
-   . lsp-proxy-mode)
   :commands
   (lsp-proxy-mode
+   lsp-proxy-enable-project
+   lsp-proxy-disable-project
    lsp-proxy-open-config-file)
   :transient
   (cat-lsp-proxy
    (:description (+with-icon "nf-md-rocket" nil " LSP Proxy"))
    ["Commands"
     ("t" "toggle" lsp-proxy-mode)
+    ("e" "enable project" lsp-proxy-enable-project)
+    ("x" "disable project" lsp-proxy-disable-project)
     ("s" "restart" lsp-proxy-workspace-restart)
     ("S" "restart all" lsp-proxy-restart)
     ("l" "open log" lsp-proxy-open-log-file)
