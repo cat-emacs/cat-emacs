@@ -95,6 +95,17 @@
 (use-package marginalia
   :hook (after-init . marginalia-mode))
 
+(use-package olivetti
+  :cat
+  :hook (text-mode . olivetti-mode)
+  :bind
+  (:map cat-toggle-map
+        ("o" . olivetti-mode))
+  :custom
+  (olivetti-body-width 0.618)
+  (olivetti-lighter (+with-icon "nf-md-format_align_center" " "))
+  (olivetti-recall-visual-line-mode-entry-state t))
+
 (use-package breadcrumb
   :hook (after-init . breadcrumb-mode)
   :custom
