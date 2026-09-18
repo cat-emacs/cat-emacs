@@ -48,7 +48,8 @@
         '("kotlin-lsp" "--stdio")))
 
 (use-package lsp-proxy
-  :vc (:url "https://github.com/cat-emacs/lsp-proxy")
+  :vc (:url "https://github.com/cat-emacs/lsp-proxy"
+            :branch "feat/project-activation")
   :delight (lsp-proxy-mode (:eval (+with-icon "nf-md-rocket" " ")))
   :custom
   (lsp-proxy-user-languages-config (cat-config-file "lsp-proxy/languages.toml"))
