@@ -102,7 +102,7 @@
   (:map cat-toggle-map
         ("o" . olivetti-mode))
   :custom
-  (olivetti-body-width 0.618)
+  (olivetti-body-width nil)
   (olivetti-lighter (+with-icon "nf-md-format_align_center" " "))
   (olivetti-recall-visual-line-mode-entry-state t))
 
