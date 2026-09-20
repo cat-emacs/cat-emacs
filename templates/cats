@@ -84,6 +84,7 @@
  :ai
  copilot
  vibe
+ gptel
  (agent-shell :cat (sidebar bookmark workspace manager macext))
  ;; (mcp :cat server)
 
