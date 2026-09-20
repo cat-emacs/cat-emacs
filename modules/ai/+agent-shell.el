@@ -84,7 +84,6 @@ per-kind icon from `cat-agent-shell-kind-icons'."
 
 (use-package agent-shell-sidebar
   :cat sidebar
-  :after agent-shell
   :vc (:url "https://github.com/cmacrae/agent-shell-sidebar")
   :bind
   (:map agent-shell-ui-mode-map
