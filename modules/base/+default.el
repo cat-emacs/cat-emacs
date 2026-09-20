@@ -11,6 +11,8 @@
   (gcmh-high-cons-threshold (* 16 1024 1024)))
 
 ;;; ui
+(setq-default fill-column 80)
+
 (use-package frame
   :ensure nil
   :config
@@ -57,9 +59,9 @@
   :delight
   (visual-line-mode
    (:eval (+with-icon (if word-wrap
-                         "nf-cod-word_wrap"
-                       "nf-md-wrap")
-                     " ")))
+                          "nf-cod-word_wrap"
+                        "nf-md-wrap")
+                      " ")))
   :hook
   (after-init . column-number-mode)
   (after-init . size-indication-mode)
