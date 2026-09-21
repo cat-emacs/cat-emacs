@@ -5,6 +5,12 @@
   :custom
   (tramp-backup-directory-alist backup-directory-alist))
 
+;; Emacs 31 kills tree-sitter temporary buffers while sweeping parser objects.
+;; The native-compiled Tramp hook allocates during GC and makes Emacs abort.
+(when (= emacs-major-version 31)
+  (with-eval-after-load 'tramp-cache
+    (remove-hook 'kill-buffer-hook #'tramp-flush-file-function)))
+
 (defun cat/sudo-edit-current-file ()
   (interactive)
   (let ((my-file-name)
