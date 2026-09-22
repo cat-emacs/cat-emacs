@@ -38,10 +38,6 @@
 
 (use-package elogcat
   :vc (:url "https://github.com/cat-emacs/elogcat.el")
-  :bind
-  (:map elogcat-mode-map
-        ("n" . #'next-line)
-        ("p" . #'previous-line))
   :minor-transient
   (android-mode
    ["Log"
