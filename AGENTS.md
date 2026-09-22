@@ -46,6 +46,9 @@ managed package declarations.
 
 - Declare archive packages with `use-package`.
 - Declare VC packages with `use-package` and `:vc`.
+- Create every new package as a standalone repository in the `cat-emacs`
+  GitHub organization, then consume it through `use-package :vc`; keep package
+  implementations out of this configuration repository.
 - Use `:cat` for optional package-backed features.
 - Enable or disable modules and Cat features in a `cats` file.
 - Keep package-manager bootstrap dependencies private to `core/package/`.

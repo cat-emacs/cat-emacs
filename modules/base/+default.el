@@ -10,6 +10,12 @@
   (gcmh-idle-delay 'auto)
   (gcmh-high-cons-threshold (* 16 1024 1024)))
 
+(use-package cat-exit-watchdog
+  :vc (:url "https://github.com/cat-emacs/cat-exit-watchdog")
+  :demand t
+  :config
+  (cat-exit-watchdog-mode 1))
+
 ;;; ui
 (setq-default fill-column 80)
 
