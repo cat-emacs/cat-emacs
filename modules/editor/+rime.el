@@ -66,4 +66,12 @@
   (cat-benchmark 'end "preload rime.")
   (rime-sync))
 
+(defun cat/finalize-rime ()
+  "Finalize librime before the C runtime destroys its global state."
+  (when (bound-and-true-p rime--lib-loaded)
+    (rime-lib-finalize)
+    (setq rime--lib-loaded nil)))
+
+(add-hook 'kill-emacs-hook #'cat/finalize-rime)
+
 (add-hook 'cat-idle-preload-hook #'cat/preload-rime)
