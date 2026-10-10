@@ -109,8 +109,10 @@
     (push termuxpath exec-path)))
 
 ;; A daemon started outside a login shell may miss bun's global bin and
-;; ~/.local/bin.  copilot.el finds copilot-language-server via `exec-path'.
-(dolist (dir (list (expand-file-name "~/.local/bin")
+;; the user bin dir.  copilot.el finds copilot-language-server via
+;; `exec-path'.
+(dolist (dir (list (expand-file-name
+                    (or (getenv "XDG_BIN_HOME") "~/.local/bin"))
                    (expand-file-name
                     "bin" (or (getenv "BUN_INSTALL") "~/.bun"))))
   (when (and (file-directory-p dir) (not (member dir exec-path)))
