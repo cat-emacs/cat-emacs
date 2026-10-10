@@ -108,6 +108,15 @@
     (setenv "PATH" (concat termuxpath ":" (getenv "PATH")))
     (push termuxpath exec-path)))
 
+;; A daemon started outside a login shell may miss bun's global bin and
+;; ~/.local/bin.  copilot.el finds copilot-language-server via `exec-path'.
+(dolist (dir (list (expand-file-name "~/.local/bin")
+                   (expand-file-name
+                    "bin" (or (getenv "BUN_INSTALL") "~/.bun"))))
+  (when (and (file-directory-p dir) (not (member dir exec-path)))
+    (push dir exec-path)
+    (setenv "PATH" (concat dir path-separator (or (getenv "PATH") "")))))
+
 ;;; benchmark
 (defun cat-benchmark (pos &optional file)
   "Print the current time of load POS of FILE."
