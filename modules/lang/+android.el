@@ -1,5 +1,21 @@
 ;; -*- lexical-binding: t; -*-
 
+(use-package android-adb
+  :vc (:url "https://github.com/cat-emacs/android-adb"))
+
+(use-package android-project
+  :vc (:url "https://github.com/cat-emacs/android-project")
+  :custom
+  (android-project-cache-directory (concat cat-cache-dir "android")))
+
+(use-package android-scrcpy
+  :vc (:url "https://github.com/cat-emacs/android-scrcpy")
+  :commands (android-scrcpy android-scrcpy-start)
+  :minor-transient
+  (android-mode
+   ["Device"
+    ("s" "screen mirror" android-scrcpy)]))
+
 (use-package android-mode
   :vc (:url "https://github.com/cat-emacs/android-mode")
   :delight (android-mode (:eval (+with-icon "nf-md-android" " ")))
@@ -7,14 +23,11 @@
   (defun cat/android-mode ()
     (when (android-root) (android-mode t)))
   :hook ((find-file dired-mode) . cat/android-mode)
-  :custom
-  (android-mode-cache-dir (concat cat-cache-dir "android"))
   :minor-transient
   (android-mode
    ["Start"
     ("a" "start app" android-start-app)
     ("r" "run" android-run)
-    ("s" "screen mirror" android-scrcpy)
     ("v" "virtual devices" android-avd)]
    ["Build"
     ("c" "build" android-gradle-build)
