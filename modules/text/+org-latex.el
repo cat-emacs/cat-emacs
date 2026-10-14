@@ -29,6 +29,7 @@
   (org-latex-preview-mode-display-live t)
   (org-latex-preview-mode-update-delay 0.25)
   (org-latex-preview-process-precompile nil)
+  (org-latex-preview-process-default 'dvisvgm)
   (org-latex-preview-mode-ignored-commands
    '(next-line
      previous-line
@@ -41,9 +42,10 @@
          (regexp-quote "\\documentclass{article}")
          "\\documentclass[dvisvgm]{article}"
          org-latex-preview-preamble t t))
-  (defun org--latex-preview-region (point-min point-max)
+  ;; org-drill and kitty-graphics still call the old internal entry point.
+  (defun org--latex-preview-region (beg end)
     (org-latex-preview--preview-region
-     org-latex-preview-process-default (point-min) (point-max))))
+     org-latex-preview-process-default beg end)))
 
 (setq org-latex-compiler "xelatex"
       org-latex-packages-alist
@@ -59,9 +61,15 @@
         ("" "svg" nil)
         )
       org-latex-default-table-environment "longtable"
-      org-latex-src-block-backend 'minted
-      org-preview-latex-image-directory (concat cat-cache-dir "org-latex/")
-      org-preview-latex-default-process 'dvisvgm)
+      org-latex-src-block-backend 'minted)
+
+(use-package ox-html
+  :ensure nil
+  :custom
+  (org-html-latex-image-options
+   `(:foreground "Black" :background "Transparent"
+     :page-width 1.0 :scale 1.0
+     :image-dir ,(concat cat-cache-dir "org-latex/"))))
 
 (defun cat/org-src-redisplay-latex-preview ()
   (when (eq major-mode 'latex-mode)
@@ -87,5 +95,4 @@
 
 (defun cat/org-preview-clear-cache ()
   (interactive)
-  (delete-directory org-preview-latex-image-directory t)
-  (message "`%s' cleared" org-preview-latex-image-directory))
+  (org-latex-preview-clear-cache nil nil t))
