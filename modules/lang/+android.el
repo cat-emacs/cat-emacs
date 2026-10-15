@@ -1,7 +1,8 @@
 ;; -*- lexical-binding: t; -*-
 
 (use-package android-adb
-  :vc (:url "https://github.com/cat-emacs/android-adb"))
+  :vc (:url "https://github.com/cat-emacs/android-adb")
+  :commands android-adb)
 
 (use-package android-project
   :vc (:url "https://github.com/cat-emacs/android-project")
