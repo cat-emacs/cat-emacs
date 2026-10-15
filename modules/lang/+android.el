@@ -4,7 +4,7 @@
   :vc (:url "https://github.com/cat-emacs/android-adb")
   :minor-transient
   (android-mode
-   ["ADB"
+   ["Devices"
     ("a" "adb menu" android-adb)]))
 
 (use-package android-project
@@ -17,7 +17,7 @@
   :commands (android-scrcpy android-scrcpy-start)
   :minor-transient
   (android-mode
-   ["Device"
+   ["Devices"
     ("s" "screen mirror" android-scrcpy)]))
 
 (use-package android-mode
@@ -31,7 +31,8 @@
   (android-mode
    ["Start"
     ("a" "start app" android-start-app)
-    ("r" "run" android-run)
+    ("r" "run" android-run)]
+   ["Devices"
     ("v" "virtual devices" android-avd)]
    ["Build"
     ("c" "build" android-gradle-build)
