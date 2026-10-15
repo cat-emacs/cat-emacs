@@ -1,7 +1,11 @@
 ;; -*- lexical-binding: t; -*-
 
 (use-package android-adb
-  :vc (:url "https://github.com/cat-emacs/android-adb"))
+  :vc (:url "https://github.com/cat-emacs/android-adb")
+  :minor-transient
+  (android-mode
+   ["ADB"
+    ("a" "adb menu" android-adb)]))
 
 (use-package android-project
   :vc (:url "https://github.com/cat-emacs/android-project")
