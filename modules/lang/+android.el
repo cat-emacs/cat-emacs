@@ -1,24 +1,24 @@
 ;; -*- lexical-binding: t; -*-
 
-(use-package android-adb
-  :vc (:url "https://github.com/cat-emacs/android-adb")
+(use-package adb
+  :vc (:url "https://github.com/cat-emacs/adb")
   :minor-transient
   (android-mode
    ["Devices"
-    ("a" "adb menu" android-adb)]))
+    ("a" "adb menu" adb)]))
 
 (use-package android-project
   :vc (:url "https://github.com/cat-emacs/android-project")
   :custom
   (android-project-cache-directory (concat cat-cache-dir "android")))
 
-(use-package android-scrcpy
-  :vc (:url "https://github.com/cat-emacs/android-scrcpy")
-  :commands (android-scrcpy android-scrcpy-start)
+(use-package scrcpy
+  :vc (:url "https://github.com/cat-emacs/scrcpy")
+  :commands (scrcpy scrcpy-start)
   :minor-transient
   (android-mode
    ["Devices"
-    ("s" "screen mirror" android-scrcpy)]))
+    ("s" "screen mirror" scrcpy)]))
 
 (use-package android-mode
   :vc (:url "https://github.com/cat-emacs/android-mode")
