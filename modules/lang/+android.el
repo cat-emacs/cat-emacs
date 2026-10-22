@@ -44,7 +44,7 @@
     ("R" "refresh" android-refresh-flavors)]))
 
 (use-package compose-preview
-  :vc (:url "https://github.com/cat-emacs/compose-preview")
+  :vc (:url "https://github.com/cat-emacs/compose-preview" :lisp-dir "lisp")
   :commands compose-preview
   :custom
   (compose-preview-cache-directory
