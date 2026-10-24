@@ -29,4 +29,8 @@
   (poetry-tracking-strategy 'switch-buffer))
 
 (use-package uv-mode
-  :hook (python-mode . uv-mode-auto-activate-hook))
+  :hook (python-mode . uv-mode-auto-activate-hook)
+  ;; Global minor mode; these keys belong to Org.
+  :bind (:map uv-mode-map
+              ("C-c C-s" . nil)
+              ("C-c C-u" . nil)))
