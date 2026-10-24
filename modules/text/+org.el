@@ -84,6 +84,7 @@
                             ("HOLD" . +org-todo-onhold)
                             ("PROJ" . +org-todo-project)
                             ("KILL" . +org-todo-cancel)))
+  (org-log-into-drawer t)
   (org-enforce-todo-dependencies t)
   (org-enforce-todo-checkbox-dependencies nil)
   :custom-face
