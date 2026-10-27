@@ -311,8 +311,10 @@
   :hook
   (after-init . midnight-mode))
 
+;; Emacs 31 formats this prompt through `crm-prompt'.
 (use-package crm
   :ensure nil
+  :unless EMACS31+
   :config
   (defun crm-indicator (args)
     (cons (format "[CRM%s] %s"
