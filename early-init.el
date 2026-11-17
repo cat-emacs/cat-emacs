@@ -1,5 +1,8 @@
 ;; -*- lexical-binding: t; -*-
 
+(when (< emacs-major-version 29)
+  (error "Cat Emacs requires Emacs 29 or newer"))
+
 ;; Keep direct batch loads on the same paths as normal init discovery.
 (when load-file-name
   (setq user-emacs-directory (file-name-directory load-file-name)

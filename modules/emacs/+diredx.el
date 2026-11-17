@@ -131,14 +131,13 @@
     (ffmpegthumbnailer . ffmpegthumbnailer)
     (mediainfo . mediainfo)))
 
+;; Loading either package pulls in Tramp; the bindings autoload them.
 (use-package dired-rsync
-  :demand t
   :after dired
   :bind (:map dired-mode-map
               ("r r" . dired-rsync)))
 
 (use-package dired-rsync-transient
-  :demand t
   :after dired
   :bind (:map dired-mode-map
               ("r t" . dired-rsync-transient)))

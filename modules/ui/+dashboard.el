@@ -7,6 +7,9 @@
   (require 'bookmark)
   (unless bookmark-bookmarks-timestamp
     (let ((existing-buffer (get-file-buffer bookmark-default-file))
+          ;; `bookmark-load' ignores the mode cookie, so mode detection would
+          ;; fall through to predicates that load whole language packages.
+          magic-mode-alist
           find-file-hook
           prog-mode-hook
           emacs-lisp-mode-hook

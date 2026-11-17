@@ -154,6 +154,17 @@ Local checkouts always install.  Remote installs run only when
      (lambda ()
        (funcall original arg local-path)))))
 
+(defun cat-package--use-package-pin-around (original package archive)
+  "Call ORIGINAL to pin PACKAGE to ARCHIVE without initializing package.el.
+`use-package-pin-package' initializes package.el on its first call, which
+loads every descriptor and archive cache during startup.  Only
+provisioning installs while modules load; any later package operation
+initializes on demand, once every pin is registered."
+  (if (or package--initialized cat-package-provision-missing)
+      (funcall original package archive)
+    (let ((package--initialized t))
+      (funcall original package archive))))
+
 (defun cat-package--install-use-package-hooks ()
   "Install package manifest hooks for use-package."
   (unless (eq use-package-ensure-function
@@ -162,7 +173,10 @@ Local checkouts always install.  Remote installs run only when
           use-package-ensure-function #'cat-package--use-package-ensure)))
 
 (eval-after-load 'use-package-ensure
-  '(cat-package--install-use-package-hooks))
+  '(progn
+     (cat-package--install-use-package-hooks)
+     (advice-add 'use-package-pin-package :around
+                 #'cat-package--use-package-pin-around)))
 
 (eval-after-load 'use-package-core
   '(unless (advice-member-p
@@ -361,6 +375,10 @@ The generated data is intended for build caching, not manual maintenance."
   (interactive)
   (require 'package-vc)
   (cat-package--require-ready-manifest)
+  ;; Initialize first: doing it inside `package-upgrade-all' would reload
+  ;; every descriptor into the filtered `package-alist' bound below.
+  (unless package--initialized
+    (package-initialize t))
   (let ((previous-selection (copy-sequence package-selected-packages))
         (previous-vc-selection (copy-tree package-vc-selected-packages)))
     (unwind-protect

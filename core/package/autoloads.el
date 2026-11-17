@@ -85,18 +85,36 @@ well, which holds the indirection when sources live in a subdirectory."
          (> source-seconds compiled-seconds)))
      candidates)))
 
+(defun cat-package--orphaned-autoloads-p (pkg-desc file)
+  "Return non-nil when autoload FILE of PKG-DESC covers a deleted source.
+`loaddefs-generate' updates an existing file one section at a time and
+never drops the section of a source that no longer exists, so upgrading
+keeps the definitions of files removed upstream.  Only VC packages are
+updated in place."
+  (when (package-vc-p pkg-desc)
+    (let ((dir (file-name-directory file)))
+      (with-temp-buffer
+        (insert-file-contents file)
+        (catch 'orphaned
+          (while (re-search-forward
+                  "^;;;* Generated autoloads from \\(.+\\)$" nil t)
+            (unless (file-exists-p (expand-file-name (match-string 1) dir))
+              (throw 'orphaned t))))))))
+
 (defun cat-package--stale-autoloads-p (pkg-desc)
-  "Return non-nil when the autoload file of PKG-DESC predates its sources.
+  "Return non-nil when the autoload file of PKG-DESC misrepresents its sources.
 `package-vc' regenerates autoloads only while upgrading, so a working
 tree updated by any other means keeps autoloads that omit newly added
-cookies."
+cookies.  Sections left behind by deleted sources survive upgrades too."
   (when-let* ((file (cat-package--autoloads-file pkg-desc))
-              (generated (cat-package--file-seconds file))
-              ;; Regenerate only beside the sources.  The package directory of
-              ;; a `:lisp-dir' package holds an indirection that must survive.
-              (newest (cat-package--newest-source-seconds
-                       (file-name-directory file))))
-    (> newest generated)))
+              (generated (cat-package--file-seconds file)))
+    (or (when-let* (;; Regenerate only beside the sources.  The package
+                    ;; directory of a `:lisp-dir' package holds an
+                    ;; indirection that must survive.
+                    (newest (cat-package--newest-source-seconds
+                             (file-name-directory file))))
+          (> newest generated))
+        (cat-package--orphaned-autoloads-p pkg-desc file))))
 
 (defun cat-package--quickstart-seconds ()
   "Return the modification time of the loaded quickstart file."
@@ -112,7 +130,7 @@ The quickstart file inlines every autoload file, so regenerating one
 without refreshing it keeps the superseded copy in effect."
   (when-let* ((generated (cat-package--quickstart-seconds)))
     (catch 'stale
-      (dolist (entry package-alist)
+      (dolist (entry (package--alist))
         (dolist (pkg-desc (cdr entry))
           (when-let* ((file (cat-package--autoloads-file pkg-desc))
                       (seconds (cat-package--file-seconds file)))
@@ -151,7 +169,9 @@ non-nil because the caller refreshes it anyway.  Return the list of
 packages that needed repair."
   (interactive)
   (let (repaired)
-    (dolist (entry package-alist)
+    ;; A quickstart startup activates packages without loading their
+    ;; descriptors, which leaves `package-alist' empty.
+    (dolist (entry (package--alist))
       (dolist (pkg-desc (cdr entry))
         (when-let* ((file (cat-package--autoloads-file pkg-desc))
                     (name (package-desc-name pkg-desc)))

@@ -161,8 +161,7 @@
 (global-so-long-mode 1)
 
 ;;; repeat
-(when EMACS28+
-  (repeat-mode 1))
+(repeat-mode 1)
 
 ;;; help
 (setq help-at-pt-display-when-idle t)
@@ -213,8 +212,18 @@
 
 (use-package type-break
   :ensure nil
+  :init
+  (defun cat/type-break-mode ()
+    "Enable `type-break-mode', visiting its state file as plain data.
+The file holds a timestamp, but its `.el' name would otherwise set it up
+as code and load every `prog-mode' package during startup."
+    (let (auto-mode-alist
+          magic-mode-alist
+          magic-fallback-mode-alist
+          find-file-hook)
+      (type-break-mode 1)))
   :hook
-  (after-init . type-break-mode)
+  (after-init . cat/type-break-mode)
   (type-break-mode . type-break-query-mode)
   (type-break-mode . type-break-mode-line-message-mode)
   :custom
