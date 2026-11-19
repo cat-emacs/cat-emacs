@@ -21,6 +21,50 @@ file name is resolved from the user or fallback template directory by
           (password-store-get path))
         (user-error "No GPTel API key found in pass entry %s" path))))
 
+(defcustom cat-gptel-backends
+  '((gptel--gemini gptel-make-gemini "Gemini"
+     :models nil :key 'gptel-api-key :stream t)
+    (gptel--openrouter gptel-make-openai "OpenRouter"
+     :models nil
+     :host "openrouter.ai"
+     :key 'gptel-api-key
+     :endpoint "/api/v1/chat/completions"
+     :stream t)
+    (gptel--mlx gptel-make-openai "MLX"
+     :models nil
+     :host "localhost:8000"
+     :protocol "http"
+     :stream t)
+    (gptel--llama gptel-make-openai "llama.cpp"
+     :models nil
+     :host "localhost:8080"
+     :protocol "http"
+     :stream t)
+    (gptel--ollama gptel-make-ollama "Ollama"
+     :stream t))
+  "GPTel backends to register after gptel loads.
+Each element is (SYMBOL CONSTRUCTOR NAME . PLIST).  A saved customization
+replaces this standard value entirely.  The two sets share menu names but
+not symbols, so merging would register both.
+
+The saved expression is evaluated when this option is defined, which is
+before gptel loads.  Keep constructors and :key forms as data;
+`cat/gptel-register-backends' evaluates PLIST values after gptel loads."
+  :type '(repeat sexp)
+  :group 'cat-emacs)
+
+(defun cat/gptel-register-backends (specs)
+  "Register each GPTel backend in SPECS.
+Each element is (SYMBOL CONSTRUCTOR NAME . PLIST).  Evaluate PLIST values
+here, where the constructors exist.  See `cat-gptel-backends'."
+  (dolist (spec specs)
+    (let ((plist (nthcdr 3 spec))
+          (args nil))
+      (while plist
+        (setq args (plist-put args (car plist) (eval (cadr plist) t))
+              plist (cddr plist)))
+      (set (car spec) (apply (cadr spec) (nth 2 spec) args)))))
+
 (use-package gptel-model-updater
   :vc (:url "https://github.com/cat-emacs/gptel-model-updater")
   :hook
@@ -42,33 +86,7 @@ file name is resolved from the user or fallback template directory by
    ["GPTel"
     ("g" "gptel" gptel)])
   :config
-  (setq gptel--gemini
-        (gptel-make-gemini "Gemini"
-          :models '()
-          :key 'gptel-api-key
-          :stream t)
-        gptel--openrouter
-        (gptel-make-openai "OpenRouter"
-          :models '()
-          :host "openrouter.ai"
-          :key 'gptel-api-key
-          :endpoint "/api/v1/chat/completions"
-          :stream t)
-        gptel--mlx
-        (gptel-make-openai "MLX"
-          :models '()
-          :host "localhost:8000"
-          :protocol "http"
-          :stream t)
-        gptel--llama
-        (gptel-make-openai "llama.cpp"
-          :models '()
-          :host "localhost:8080"
-          :protocol "http"
-          :stream t)
-        gptel--ollama
-        (gptel-make-ollama "Ollama"
-          :stream t)))
+  (cat/gptel-register-backends cat-gptel-backends))
 
 (use-package gptel-magit
   :vc (:url "https://github.com/roife/gptel-magit")
@@ -79,8 +97,11 @@ file name is resolved from the user or fallback template directory by
   :config
   (defun cat/gptel-magit-minimize-reasoning (generate &rest args)
     "Call GENERATE with ARGS and minimal OpenRouter reasoning."
+    ;; The symbol exists only when the openrouter alias resolved.
     (let ((gptel--request-params
-           (if (eq (or gptel-magit-backend gptel-backend) gptel--openrouter)
+           (if (and (boundp 'gptel--openrouter)
+                    (eq (or gptel-magit-backend gptel-backend)
+                        gptel--openrouter))
                (plist-put (copy-sequence gptel--request-params)
                           :reasoning '(:exclude t :effort "minimal"))
              gptel--request-params)))
