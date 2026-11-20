@@ -23,11 +23,11 @@ file name is resolved from the user or fallback template directory by
 
 (defcustom cat-gptel-backends
   '((gptel--gemini gptel-make-gemini "Gemini"
-     :models nil :key 'gptel-api-key :stream t)
+     :models nil :key gptel-api-key :stream t)
     (gptel--openrouter gptel-make-openai "OpenRouter"
      :models nil
      :host "openrouter.ai"
-     :key 'gptel-api-key
+     :key gptel-api-key
      :endpoint "/api/v1/chat/completions"
      :stream t)
     (gptel--mlx gptel-make-openai "MLX"
@@ -47,22 +47,29 @@ Each element is (SYMBOL CONSTRUCTOR NAME . PLIST).  A saved customization
 replaces this standard value entirely.  The two sets share menu names but
 not symbols, so merging would register both.
 
-The saved expression is evaluated when this option is defined, which is
-before gptel loads.  Keep constructors and :key forms as data;
-`cat/gptel-register-backends' evaluates PLIST values after gptel loads."
+The saved expression is evaluated when this option is defined, before
+gptel loads, so every PLIST value is literal data.  :auth is (PATH FIELD)
+or (PATH); registration turns it into the :key pass reader."
   :type '(repeat sexp)
   :group 'cat-emacs)
 
 (defun cat/gptel-register-backends (specs)
   "Register each GPTel backend in SPECS.
-Each element is (SYMBOL CONSTRUCTOR NAME . PLIST).  Evaluate PLIST values
-here, where the constructors exist.  See `cat-gptel-backends'."
+Each element is (SYMBOL CONSTRUCTOR NAME . PLIST).  :auth (PATH FIELD)
+becomes the :key reader from `cat/gptel-api-key-from-pass' and is not
+passed to the constructor.  See `cat-gptel-backends'."
   (dolist (spec specs)
     (let ((plist (nthcdr 3 spec))
-          (args nil))
+          (args nil)
+          (auth nil))
       (while plist
-        (setq args (plist-put args (car plist) (eval (cadr plist) t))
-              plist (cddr plist)))
+        (if (eq (car plist) :auth)
+            (setq auth (cadr plist))
+          (setq args (plist-put args (car plist) (cadr plist))))
+        (setq plist (cddr plist)))
+      (when auth
+        (setq args (plist-put args :key
+                              (apply #'cat/gptel-api-key-from-pass auth))))
       (set (car spec) (apply (cadr spec) (nth 2 spec) args)))))
 
 (use-package gptel-model-updater
