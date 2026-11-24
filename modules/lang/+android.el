@@ -30,7 +30,7 @@
   :minor-transient
   (android-mode
    ["Start"
-    ("a" "start app" android-start-app)
+    ("A" "start app" android-start-app)
     ("r" "run" android-run)]
    ["Devices"
     ("v" "virtual devices" android-avd)]
